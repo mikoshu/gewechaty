@@ -1,13 +1,13 @@
-# GeweBot
+# gewechaty
 
 ## 一、简介
-GeweBot是基于Gewechat项目的二次封装，提供了更方便的使用方式。它参考wechaty的api实现，以满足更快速开发的需求。
+gewechaty是基于Gewechat项目的二次封装，提供了更方便的使用方式。它参考wechaty的api实现，以满足更快速开发的需求。
 
 ## 二、安装
 使用以下命令安装本插件：
 
 ```bash
-npm install --save gewe-bot
+npm install --save gewechaty
 ```
 
 ## 三、使用方法
@@ -16,7 +16,7 @@ npm install --save gewe-bot
 在你的 Node.js 项目中，使用以下方式导入插件：
 
 ```javascript
-const {GeweBot, Filebox, UrlLink, WeVideo, Voice, MiniApp, AppMsg, Message} = require('gewe-bot')
+const {GeweBot, Filebox, UrlLink, WeVideo, Voice, MiniApp, AppMsg, Message} = require('gewechaty')
 const bot = new GeweBot({
   base_api: process.env.WEGE_BASE_API_URL, // Gewechat启动后的基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
   file_api: process.env.WEGE_FILE_API_URL, // Gewechat启动后的文件api地址base_api 默认为 `http://本机ip:2532/download`,
