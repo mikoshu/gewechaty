@@ -38,5 +38,25 @@
   },
   "files": [
     "dist/"
-  ]
+  ],
+  "repository": {                          
+    "type": "git",
+    "url": "https://github.com/mikoshu/gewechaty.git"
+  },
+  "keywords": [                             
+    "wechaty",
+    "wechatBot",
+    "wechat",
+    "gewechat"
+  ],
+  "bugs": {                                 
+    "url": "https://github.com/mikoshu/gewechaty/issues"
+  },
+  "engines": {                              
+    "node": ">=16.0.0"
+  },
+  "private": false,                         
+  "publishConfig": {                        
+    "registry": "https://registry.npmjs.org/"  
+  }
 }
