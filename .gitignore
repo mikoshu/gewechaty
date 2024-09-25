@@ -14,6 +14,8 @@ yarn-error.log*
 pnpm-debug.log*
 ds.json
 cmd.txt
+.env
+.env.proxy
 # Editor directories and files
 .idea
 .vscode
