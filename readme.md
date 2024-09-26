@@ -146,85 +146,85 @@ const bot = new GeweBot({
 ```
 ### Message 类方法表
 
-| **方法名**                | **返回值类型**  | **说明**                                                                                 |
-| ------------------------- | --------------- | ---------------------------------------------------------------------------------------- |
-| `isCompanyMsg()`           | `boolean`       | 判断消息是否为企业微信消息。                                                             |
-| `from()`                   | `Promise<Contact>`       | 获取消息的发送者。                                                                       |
-| `to()`                     | `Promise<Contact>`       | 获取消息的接收者。                                                                       |
-| `room()`                   | `boolean`       | 判断消息是否为群聊消息。                                                                 |
-| `text()`                   | `string`        | 获取消息的内容。                                                                         |
-| `async say(textOrContactOrFileOrUrl)` | `Promise<ResponseMsg>` | 回复消息。                                                                               |
-| `type()`                   | `string`        | 获取消息的类型。参考 MessageType                                                                         |
-| `self()`                   | `boolean`       | 判断是否为自己发的消息。                                                                 |
-| `async mention()`          | `Promise`       | 获取被@的联系人（尚未实现）。                                                            |
-| `async mentionSelf()`       | `Promise`       | 判断是否自己被@。                                                                        |
-| `async forward(to)`        | `Promise`       | 转发消息。                                                                               |
-| `date()`                   | `Date`          | 获取消息的日期。                                                                         |
-| `age()`                    | `number`        | 获取消息的年龄（以秒为单位）。                                                           |
-| `async toContact()`        | `Promise`       | 获取名片（尚未实现）。                                                                   |
-| `async toUrlLink()`        | `Promise`       | 获取链接（尚未实现）。                                                                   |
-| `async toFileBox(type = 2)`| `Promise<FileBox>`       | 将消息转换为 FileBox 对象，通常用于图片消息。                                             |
-| `getXml2Json(xml)`         | `Object`        | 将XML解析为JSON对象。                                                                    |
-| `static async find(query)` | `Promise<Contact>`       | 根据查询条件查找消息。                                                                   |
-| `static async findAll(queryArgs)` | `Promise<[Contact]>` | 查找所有符合查询条件的消息（暂不支持）。                                                 |
-| `static getType(type, xml)`| `string`        | 根据消息类型和XML内容获取具体的消息类型。                                                |
+| **方法名**                            | **返回值类型**         | **说明**                                    |
+|---------------------------------------|------------------------|-------------------------------------------|
+| `isCompanyMsg()`                      | `boolean`              | 判断消息是否为企业微信消息。                 |
+| `from()`                              | `Promise<Contact>`     | 获取消息的发送者。                           |
+| `to()`                                | `Promise<Contact>`     | 获取消息的接收者。                           |
+| `room()`                              | `boolean`              | 判断消息是否为群聊消息。                     |
+| `text()`                              | `string`               | 获取消息的内容。                             |
+| `async say(textOrContactOrFileOrUrl)` | `Promise<ResponseMsg>` | 回复消息。                                   |
+| `type()`                              | `string`               | 获取消息的类型。参考 MessageType             |
+| `self()`                              | `boolean`              | 判断是否为自己发的消息。                     |
+| `async mention()`                     | `Promise`              | 获取被@的联系人（尚未实现）。                  |
+| `async mentionSelf()`                 | `Promise`              | 判断是否自己被@。                            |
+| `async forward(to)`                   | `Promise`              | 转发消息。                                   |
+| `date()`                              | `Date`                 | 获取消息的日期。                             |
+| `age()`                               | `number`               | 获取消息的年龄（以秒为单位）。                 |
+| `async toContact()`                   | `Promise`              | 获取名片（尚未实现）。                         |
+| `async toUrlLink()`                   | `Promise`              | 获取链接（尚未实现）。                         |
+| `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，通常用于图片消息。 |
+| `getXml2Json(xml)`                    | `Object`               | 将XML解析为JSON对象。                        |
+| `static async find(query)`            | `Promise<Contact>`     | 根据查询条件查找消息。                       |
+| `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | 查找所有符合查询条件的消息（暂不支持）。       |
+| `static getType(type, xml)`           | `string`               | 根据消息类型和XML内容获取具体的消息类型。    |
 
 ### ResponseMsg 类属性和方法表
 
-| **方法名** | **返回值类型**  | **说明**                                  |
-| ---------- | --------------- | ----------------------------------------- |
-| `revork()` | `Promise`        | 撤回消息。                                |
+| **方法名** | **返回值类型** | **说明**  |
+|------------|----------------|---------|
+| `revork()` | `Promise`      | 撤回消息。 |
 
 
 ### Contact 类方法表
 
-| **方法名**                       | **返回值类型**  | **说明**                                                                                     |
-| -------------------------------- | --------------- | -------------------------------------------------------------------------------------------- |
-| `async say(textOrContactOrFileOrUrl)` | `Promise`       | 回复消息，返回 `ResponseMsg` 对象。                                                           |
-| `name()`                         | `string`        | 获取联系人的昵称。                                                                           |
-| `async alias(newAlias)`          | `Promise`       | 获取或设置联系人的备注名。传递 `newAlias` 时设置新的备注名，否则返回当前的备注名。              |
-| `friend()`                       | `boolean`       | 返回是否为微信好友。当前固定为tue                                                                         |
-| `type()`                         | `number`        | 返回联系人的类型。                                                                           |
-| `gender()`                       | `number`        | 返回联系人的性别。                                                                           |
-| `province()`                     | `string`        | 返回联系人的省份信息。                                                                       |
-| `city()`                         | `string`        | 返回联系人的城市信息。                                                                       |
-| `async avatar()`                 | `Promise`       | 返回联系人的头像URL。                                                                        |
-| `async sync()`                   | `Promise`       | 同步联系人信息，当前未支持，直接返回 `true`。                                                 |
-| `self()`                         | `boolean`       | 判断该联系人是否为当前用户自己。                                                             |
+| **方法名**                            | **返回值类型** | **说明**                                                                        |
+|---------------------------------------|----------------|-------------------------------------------------------------------------------|
+| `async say(textOrContactOrFileOrUrl)` | `Promise`      | 回复消息，返回 `ResponseMsg` 对象，可用于撤回消息。                                |
+| `name()`                              | `string`       | 获取联系人的昵称。                                                               |
+| `async alias(newAlias)`               | `Promise`      | 获取或设置联系人的备注名。传递 `newAlias` 时设置新的备注名，否则返回当前的备注名。 |
+| `friend()`                            | `boolean`      | 返回是否为微信好友。当前固定为tue                                                |
+| `type()`                              | `number`       | 返回联系人的类型。                                                               |
+| `gender()`                            | `number`       | 返回联系人的性别。                                                               |
+| `province()`                          | `string`       | 返回联系人的省份信息。                                                           |
+| `city()`                              | `string`       | 返回联系人的城市信息。                                                           |
+| `async avatar()`                      | `Promise`      | 返回联系人的头像URL。                                                            |
+| `async sync()`                        | `Promise`      | 同步联系人信息，当前未支持，直接返回 `true`。                                      |
+| `self()`                              | `boolean`      | 判断该联系人是否为当前用户自己。                                                 |
 
 ### Contact 类静态方法表
 
-| **方法名**                | **返回值类型**  | **说明**                                                                                     |
-| ------------------------- | --------------- | -------------------------------------------------------------------------------------------- |
-| `static async find(query)` | `Promise`       | 根据查询条件查找联系人。                                                                      |
-| `static async findAll(queryArgs)` | `Promise` | 查找所有符合查询条件的联系人，当前不支持该方法。                                              |
+| **方法名**                 | **返回值类型**     | **说明**                                                        |
+|----------------------------|--------------------|---------------------------------------------------------------|
+| `static async find(query)` | `Promise<Contact>` | 根据查询条件查找联系人。（query为wxid或Contact类）                 |
+| `static async findAll()`   | `Promise`          | 查找通讯录列表返回同Gewechat `/contacts/fetchContactsList`接口。 |
 
 ### MessageType 类型表
 
-| **类型**               | **说明**           |
-| ---------------------- | ------------------ |
-| `Unknown`             | 未知类型           |
-| `FileStart`           | 文件开始           |
-| `File`                | 文件发送结束       |
-| `Voice`               | 语音               |
-| `Contact`             | 名片               |
-| `Emoji`               | 表情               |
-| `Image`               | 图片               |
-| `Text`                | 文本               |
-| `Video`               | 视频               |
-| `Url`                 | 链接               |
-| `RoomInvitation`      | 群邀请             |
-| `MiniApp`             | 小程序消息         |
-| `AppMsg`              | app消息            |
-| `Link`                | 公众号链接         |
-| `AddFriend`           | 添加好友通知       |
-| `Quote`               | 引用消息           |
-| `Transfer`            | 转账               |
-| `RedPacket`           | 红包               |
-| `VideoAccount`        | 视频号消息         |
-| `Revork`              | 撤回消息           |
-| `Pat`                 | 拍一拍             |
-| `Location`            | 位置消息           |
+| **类型**         | **说明**     |
+|------------------|------------|
+| `Unknown`        | 未知类型     |
+| `FileStart`      | 文件开始     |
+| `File`           | 文件发送结束 |
+| `Voice`          | 语音         |
+| `Contact`        | 名片         |
+| `Emoji`          | 表情         |
+| `Image`          | 图片         |
+| `Text`           | 文本         |
+| `Video`          | 视频         |
+| `Url`            | 链接         |
+| `RoomInvitation` | 群邀请       |
+| `MiniApp`        | 小程序消息   |
+| `AppMsg`         | app消息      |
+| `Link`           | 公众号链接   |
+| `AddFriend`      | 添加好友通知 |
+| `Quote`          | 引用消息     |
+| `Transfer`       | 转账         |
+| `RedPacket`      | 红包         |
+| `VideoAccount`   | 视频号消息   |
+| `Revork`         | 撤回消息     |
+| `Pat`            | 拍一拍       |
+| `Location`       | 位置消息     |
 
 
 ## 五、贡献
@@ -233,7 +233,10 @@ const bot = new GeweBot({
 2. 创建一个新的分支进行你的修改。
 3. 提交你的修改并创建一个 pull request。
 
-## 六、许可证
-本插件使用[许可证名称]许可证。详细信息请参阅 LICENSE 文件。
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
 
 ---
