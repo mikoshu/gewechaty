@@ -1,7 +1,7 @@
 # gewechaty
 
 ## 一、简介
-gewechaty是基于Gewechat项目的二次封装，提供了更方便的使用方式。它参考wechaty的api实现，以满足更快速开发的需求。
+gewechaty是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)项目的二次封装，提供了更方便的使用方式。它参考wechaty的api实现，以满足更快速开发的需求。
 
 改项目基于Gewechat，请先确认Gewechat已经能够正常启动，否则无法使用本插件。
 

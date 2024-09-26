@@ -60,25 +60,31 @@ export const startServe = (option) => {
     app.listen(option.port, async (err) => {
       if(err){
         reject(err)
-        // process.exit(1);
+        process.exit(1);
       }
 
       try{
         const isOnline = await CheckOnline({
           appId: getAppId()
         })
-        if(!isOnline){
+        if(isOnline && isOnline.ret !== 200){
           console.log('未登录')
           await login()
         }
-        await setUrl(callBackUrl)
-        console.log(`设置回调地址为：${callBackUrl}`)
-        console.log('服务启动成功')
-        resolve(app)
+        const res = await setUrl(callBackUrl)
+        if(res.ret === 200){
+          console.log(`设置回调地址为：${callBackUrl}`)
+          console.log('服务启动成功')
+          resolve(app)
+        }else{
+          console.log('回调地址设置失败，请确定gewechat能访问到回调地址网络')
+          reject(res)
+          process.exit(1);
+        }
       }catch(e){
         console.log('服务启动失败')
-        console.error(e)
         reject(e)
+        process.exit(1);
       }
     }).on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
