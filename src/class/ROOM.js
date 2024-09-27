@@ -2,11 +2,17 @@ import { say, getWxId } from '@/action/common.js';
 import {inviteMember, delMember} from '@/action/room.js'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 import {Contact} from '@/class/CONTACT.js'
-
+// add lowdb to cache data
+// import lowdb from 'lowdb';
+// import FileSync from 'lowdb/adapters/FileSync';
+// const adapter = new FileSync('db.json');
+// const db = lowdb(adapter);
+// db.defaults({ rooms: [] }).write();
 export class Room {
   constructor(data) {
     console.log(data)
     this.chatroomId = data.chatroomId; // 房间ID
+    this.id = data.chatroomId; // 房间ID
     this.topic = data.nickName || ""; // 房间话题
     this.remark = data.remark || ""; // 房间备注
     this.isNotify = Boolean(data.chatRoomNotify)
