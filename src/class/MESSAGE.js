@@ -1,6 +1,7 @@
 import { XMLParser} from "fast-xml-parser";
 import { say, revork, forward } from '@/action/common.js';
 import {getContact, find} from '@/action/contact'
+import {getRoomInfo} from '@/action/room'
 import {toFileBox} from '@/action/file'
 import {Filebox} from '@/class/FILEBOX'
 import {MessageType} from '@/type/MessageType'
@@ -41,8 +42,13 @@ export class Message {
     return getContact(this.toId);
   }
 
-  room() { // 是否是群聊消息
-    return this.fromId.includes('@chatroom')
+  async room() { // 是否是群聊消息
+    const isRoom = this.fromId.includes('@chatroom')
+    if(isRoom){
+      return await getRoomInfo(this.fromId)
+    }else{
+      return Promise.resolve(false)
+    }
   }
 
   text() { // 消息内容

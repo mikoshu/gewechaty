@@ -48,13 +48,13 @@ service.interceptors.response.use(
     console.log(response.request.path)
     console.log(response.data)
     console.log(response.data.ret)
+    if(response.config.allCode){
+      return response.data
+    }
     if (response.data.ret === 200) {
       return response.data.data
-    }else if(response.data.ret === 500 && response.data.msg.includes('已登录')){
-      return 'success'
     }else{
-      console.log('in')
-      return response.data
+      return Promise.reject(response.data)
     }
   },
   error => {
@@ -63,31 +63,31 @@ service.interceptors.response.use(
   }
 )
 
-export const post = (url, data, config) => {
-  config = config === undefined ? {} : config;
-  return service({ url, method: "post", data, ...config });
-};
+// export const post = (url, data, config) => {
+//   config = config === undefined ? {} : config;
+//   return service({ url, method: "post", data, ...config });
+// };
 
 // post 方法
-// export const post = async (url, data, config = {}) => {
-//   try {
-//     console.log('post-data', data)
-//     // 发送 POST 请求
-//     const response = await service({
-//       url,
-//       method: "post",
-//       data,
-//       ...config
-//     });
-//     return response;
-//   } catch (error) {
-//     // 在这里处理错误
-//     console.error(`请求${url}出错：`, error);
-//     // 自定义处理逻辑，比如返回错误信息或处理默认返回值
-//     return {
-//       success: false,
-//       message: '请求失败',
-//       error: error.message || error
-//     };
-//   }
-// };
+export const post = async (url, data, config = {}) => {
+  try {
+    console.log('post-data', data)
+    // 发送 POST 请求
+    const response = await service({
+      url,
+      method: "post",
+      data,
+      ...config
+    });
+    return response;
+  } catch (error) {
+    // 在这里处理错误
+    console.error(`请求${url}出错：`, error);
+    // 自定义处理逻辑，比如返回错误信息或处理默认返回值
+    return {
+      success: false,
+      message: '请求失败',
+      error: error.message || error
+    };
+  }
+};

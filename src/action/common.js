@@ -162,6 +162,16 @@ export const forward = async (content, contact, type) => {
 
 }
 
+export const getWxId = (content) => {
+  if(typeof content ==='string'){
+    return content
+  }else if(content instanceof Contact){
+    return content._wxid
+  }else{
+    throw new Error('获取wxid必须传入string或者contact对象')
+  }
+}
+
 
 // 下载文件
 

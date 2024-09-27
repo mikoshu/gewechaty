@@ -1,5 +1,5 @@
 import {say} from '@/action/common'
-import {setRemark, find} from '@/action/contact'
+import {setRemark, find, findAll} from '@/action/contact'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 export class Contact {
   constructor(contactData) {
@@ -75,11 +75,10 @@ export class Contact {
   // 静态方法
 
   static async find(query) {
-    return await find(query)
+    return find(query)
   }
 
-  static async findAll(queryArgs) {
-    console.log('暂不支持findAll')
-    return Promise.resolve([])
+  static async findAll() {
+    return findAll()
   }
 }

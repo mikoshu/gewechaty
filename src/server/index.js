@@ -67,9 +67,14 @@ export const startServe = (option) => {
         const isOnline = await CheckOnline({
           appId: getAppId()
         })
-        if(isOnline && isOnline.ret !== 200){
+        console.log('isOnline', isOnline)
+        if(isOnline.ret === 200 && isOnline.data === false){
           console.log('未登录')
-          await login()
+          const loginRes = await login()
+          if(!loginRes){
+            console.log('登录失败')
+            process.exit(1);
+          }
         }
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){
@@ -83,6 +88,7 @@ export const startServe = (option) => {
         }
       }catch(e){
         console.log('服务启动失败')
+        console.error(e)
         reject(e)
         process.exit(1);
       }

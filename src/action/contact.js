@@ -1,4 +1,4 @@
-import {setFriendRemark, findContact, getInfo} from '@/api/contact'
+import {setFriendRemark, findContact, getInfo, findAllContact} from '@/api/contact'
 import {getAppId} from '@/utils/auth.js'
 import {Contact} from '@/class/CONTACT'
 const appId = getAppId()
@@ -56,5 +56,21 @@ export const find = async (content) => {
     console.error(e)
     return null
   }
-  
+}
+
+export const findAll = async () => {
+  try{
+    const res = await findAllContact({
+      appId
+    })
+    if(res && res.friends){ // 返回一个wxid数组
+      return res.friends
+    }else{
+      console.log('好友列表获取失败')
+      return null
+    }
+  }catch(e){
+    console.error(e)
+    return null
+  }
 }

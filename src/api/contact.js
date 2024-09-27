@@ -16,3 +16,7 @@ export const findContact = (data, config) => {
   return post('/contacts/search', data, config)
 }
 
+export const findAllContact = (data, config) => {
+  return post('/contacts/fetchContactsList', data, config)
+}
+
