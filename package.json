@@ -14,6 +14,7 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
+    "better-sqlite3": "^11.3.0",
     "dotenv": "^16.4.5",
     "dotenv-cli": "^7.4.2",
     "ds": "^2.0.2",
@@ -39,24 +40,24 @@
   "files": [
     "dist/"
   ],
-  "repository": {                          
+  "repository": {
     "type": "git",
     "url": "https://github.com/mikoshu/gewechaty.git"
   },
-  "keywords": [                             
+  "keywords": [
     "wechaty",
     "wechatBot",
     "wechat",
     "gewechat"
   ],
-  "bugs": {                                 
+  "bugs": {
     "url": "https://github.com/mikoshu/gewechaty/issues"
   },
-  "engines": {                              
+  "engines": {
     "node": ">=16.0.0"
   },
-  "private": false,                         
-  "publishConfig": {                        
-    "registry": "https://registry.npmjs.org/"  
+  "private": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }

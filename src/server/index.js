@@ -5,11 +5,14 @@ import serve from 'koa-static'
 import { join } from 'path';
 import {setUrl} from '@/action/setUrl.js'
 import {login} from '@/action/login.js'
+import {cacheAllContact} from '@/action/contact'
+import {setCached} from '@/action/common'
 import {CheckOnline} from '@/api/login'
 import { getLocalIPAddress } from "@/utils/index.js";
 import {Message} from '@/class/MESSAGE.js'
 import { botEmitter } from '@/bot.js'
 import { getAppId } from '@/utils/auth.js';
+import {db} from '@/sql/index.js'
 export const bot = botEmitter
 
 const ip = getLocalIPAddress()
@@ -33,15 +36,22 @@ export const startServe = (option) => {
       console.log('POST 请求的数据:', body);
       if(body && body.TypeName === 'Offline'){
         console.log('掉线咯！！！')
+        process.exit(1);
       }
 
       // 判断是否是微信消息
-      if(body.Appid && body.TypeName === 'AddMsg'){
+      if(body.Appid && body.TypeName === 'AddMsg'){ // 大部分消息类型都为 AddMsg
+        if(option.use_cache){ // 开启缓存时 缓存内容
+
+        } 
         // 消息hanlder
         const msg = new Message(body)
         // 发送消息
         bot.emit('message', msg)
       }
+      // "TypeName": "ModContacts", 好友消息， 群信息变更 
+      // "TypeName": "DelContacts" 删除好友
+      // "TypeName": "DelContacts" 退出群聊
       
     }catch(e){
       console.error(e)
@@ -67,7 +77,6 @@ export const startServe = (option) => {
         const isOnline = await CheckOnline({
           appId: getAppId()
         })
-        console.log('isOnline', isOnline)
         if(isOnline.ret === 200 && isOnline.data === false){
           console.log('未登录')
           const loginRes = await login()
@@ -76,6 +85,23 @@ export const startServe = (option) => {
             process.exit(1);
           }
         }
+        setCached(false)
+        if(option.use_cache){ // 使用缓存 且不存在数据库文件 创建本地数据库
+          setCached(true)
+          if(!db.exists(getAppId()+'.db')){
+            console.log('启用缓存 但不存在数据库文件 创建本地数据库')
+            db.connect(getAppId()+'.db')
+            // 创建表
+            db.createContactTable()
+            db.createRoomTable()
+            // 缓存所有联系人 并保存到本地数据库
+            await cacheAllContact()
+          }else{
+            db.connect(getAppId()+'.db')
+            console.log('启用缓存 且存在数据库文件 跳过缓存')
+          }
+        }
+
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){
           console.log(`设置回调地址为：${callBackUrl}`)

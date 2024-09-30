@@ -1,0 +1,284 @@
+import Database from 'better-sqlite3';
+import fs from 'fs';
+
+
+class myDB {
+  constructor() {
+    this.db = null;
+  }
+
+  exists(dbName) {
+    return fs.existsSync(dbName);
+  }
+
+  // 方法1：传入数据库名称，检查是否存在数据库，存在则返回db实例，不存在则创建并返回实例
+  connect(dbName) {
+    if (!fs.existsSync(dbName)) {
+      console.log(`Database ${dbName} does not exist, creating...`);
+    }
+    this.db = new Database(dbName);
+    console.log(`Connected to database: ${dbName}`);
+    return this.db;
+  }
+
+  // 方法2：创建contact表，如果不存在则创建
+  createContactTable() {
+    const tableName = 'contact';
+    const tableSchema = `
+      userName TEXT PRIMARY KEY,
+      nickName TEXT,
+      pyInitial TEXT,
+      quanPin TEXT,
+      sex INTEGER,
+      remark TEXT,
+      remarkPyInitial TEXT,
+      remarkQuanPin TEXT,
+      signature TEXT,
+      alias TEXT,
+      snsBgImg TEXT,
+      country TEXT,
+      bigHeadImgUrl TEXT,
+      smallHeadImgUrl TEXT,
+      description TEXT,
+      cardImgUrl TEXT,
+      labelList TEXT,
+      province TEXT,
+      city TEXT,
+      phoneNumList TEXT
+    `;
+
+    const tableExists = this.db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`).get(tableName);
+    if (!tableExists) {
+      console.log(`Table ${tableName} does not exist, creating...`);
+      this.db.exec(`CREATE TABLE ${tableName} (${tableSchema})`);
+    } else {
+      console.log(`Table ${tableName} already exists.`);
+    }
+  }
+
+  // 方法2：创建room表，如果不存在则创建
+  createRoomTable() {
+    const tableName = 'room';
+    const tableSchema = `
+      chatroomId TEXT PRIMARY KEY,
+      nickName TEXT,
+      pyInitial TEXT,
+      quanPin TEXT,
+      sex INTEGER,
+      remark TEXT,
+      remarkPyInitial TEXT,
+      remarkQuanPin TEXT,
+      chatRoomNotify INTEGER,
+      chatRoomOwner TEXT,
+      smallHeadImgUrl TEXT
+    `;
+
+    const tableExists = this.db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`).get(tableName);
+    if (!tableExists) {
+      console.log(`Table ${tableName} does not exist, creating...`);
+      this.db.exec(`CREATE TABLE ${tableName} (${tableSchema})`);
+    } else {
+      console.log(`Table ${tableName} already exists.`);
+    }
+  }
+
+  // 方法3：根据 userName 查找联系人，返回该条数据或 null
+  findOneByWxId(wxid) {
+    const stmt = this.db.prepare('SELECT * FROM contact WHERE userName = ?');
+    const row = stmt.get(wxid);
+    return row ? row : null;
+  }
+
+  findOneByName(nickName) {
+    const stmt = this.db.prepare('SELECT * FROM contact WHERE nickName = ?');
+    const row = stmt.get(nickName);
+    return row ? row : null;
+  }
+  findAllByName(nickName) {
+    const stmt = this.db.prepare('SELECT * FROM contact WHERE nickName = ?');
+    const rows = stmt.all(nickName);
+    return rows.length > 0 ? rows : null;
+  }
+
+  findOneByAlias(alias) {
+    const stmt = this.db.prepare('SELECT * FROM contact WHERE remark = ?');
+    const row = stmt.get(alias);
+    return row ? row : null;
+  }
+
+  findAllByAlias(alias) {
+    const stmt = this.db.prepare('SELECT * FROM contact WHERE remark = ?');
+    const rows = stmt.all(alias);
+    return rows.length > 0 ? rows : null;
+  }
+
+  // 方法3：根据 chatroomId 查找房间，返回该条数据或 null
+  findOneByChatroomId(chatroomId) {
+    const stmt = this.db.prepare('SELECT * FROM room WHERE chatroomId = ?');
+    const row = stmt.get(chatroomId);
+    return row ? row : null;
+  }
+
+  findOneByChatroomName(name) {
+    const stmt = this.db.prepare('SELECT * FROM room WHERE nickName = ?');
+    const row = stmt.get(name);
+    return row ? row : null;
+  }
+
+  findAllByChatroomName(name) {
+    const stmt = this.db.prepare('SELECT * FROM room WHERE nickName = ?');
+    const rows = stmt.all(name);
+    return rows.length > 0 ? rows : null;
+  }
+
+  // 方法4：插入新的联系人数据
+  insertContact(contact) {
+    const insertStmt = this.db.prepare(`
+      INSERT INTO contact (
+        userName, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
+        remarkQuanPin, signature, alias, snsBgImg, country, bigHeadImgUrl,
+        smallHeadImgUrl, description, cardImgUrl, labelList, province, city, phoneNumList
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    insertStmt.run(
+      contact.userName || null,
+      contact.nickName || null,
+      contact.pyInitial || null,
+      contact.quanPin || null,
+      contact.sex || null,
+      contact.remark || null,
+      contact.remarkPyInitial || null,
+      contact.remarkQuanPin || null,
+      contact.signature || null,
+      contact.alias || null,
+      contact.snsBgImg || null,
+      contact.country || null,
+      contact.bigHeadImgUrl || null,
+      contact.smallHeadImgUrl || null,
+      contact.description || null,
+      contact.cardImgUrl || null,
+      contact.labelList || null,
+      contact.province || null,
+      contact.city || null,
+      contact.phoneNumList || null
+    );
+
+    console.log(`Inserted new contact: ${contact.userName}`);
+  }
+
+  // 方法4：插入新的房间数据
+  insertRoom(room) {
+    const insertStmt = this.db.prepare(`
+      INSERT INTO room (
+        chatroomId, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
+        remarkQuanPin, chatRoomNotify, chatRoomOwner, smallHeadImgUrl
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    insertStmt.run(
+      room.chatroomId || null,
+      room.nickName || null,
+      room.pyInitial || null,
+      room.quanPin || null,
+      room.sex || null,
+      room.remark || null,
+      room.remarkPyInitial || null,
+      room.remarkQuanPin || null,
+      room.chatRoomNotify || null,
+      room.chatRoomOwner || null,
+      room.smallHeadImgUrl || null
+    );
+
+    console.log(`Inserted new room: ${room.chatroomId}`);
+  }
+
+  // 方法5：更新联系人数据
+  updateContact(userName, newData) {
+    const existingContact = this.findOneByUserName(userName);
+    if (!existingContact) {
+      console.log(`Contact ${userName} does not exist.`);
+      return;
+    }
+
+    const updateStmt = this.db.prepare(`
+      UPDATE contact SET
+        nickName = ?, pyInitial = ?, quanPin = ?, sex = ?, remark = ?, remarkPyInitial = ?,
+        remarkQuanPin = ?, signature = ?, alias = ?, snsBgImg = ?, country = ?, bigHeadImgUrl = ?,
+        smallHeadImgUrl = ?, description = ?, cardImgUrl = ?, labelList = ?, province = ?, city = ?, phoneNumList = ?
+      WHERE userName = ?
+    `);
+
+    updateStmt.run(
+      newData.nickName || existingContact.nickName,
+      newData.pyInitial || existingContact.pyInitial,
+      newData.quanPin || existingContact.quanPin,
+      newData.sex || existingContact.sex,
+      newData.remark || existingContact.remark,
+      newData.remarkPyInitial || existingContact.remarkPyInitial,
+      newData.remarkQuanPin || existingContact.remarkQuanPin,
+      newData.signature || existingContact.signature,
+      newData.alias || existingContact.alias,
+      newData.snsBgImg || existingContact.snsBgImg,
+      newData.country || existingContact.country,
+      newData.bigHeadImgUrl || existingContact.bigHeadImgUrl,
+      newData.smallHeadImgUrl || existingContact.smallHeadImgUrl,
+      newData.description || existingContact.description,
+      newData.cardImgUrl || existingContact.cardImgUrl,
+      newData.labelList || existingContact.labelList,
+      newData.province || existingContact.province,
+      newData.city || existingContact.city,
+      newData.phoneNumList || existingContact.phoneNumList,
+      userName
+    );
+
+    console.log(`Updated contact: ${userName}`);
+  }
+
+  // 方法5：更新房间数据
+  updateRoom(chatroomId, newData) {
+    const existingRoom = this.findOneByChatroomId(chatroomId);
+    if (!existingRoom) {
+      console.log(`Room ${chatroomId} does not exist.`);
+      return;
+    }
+
+    const updateStmt = this.db.prepare(`
+      UPDATE room SET
+        nickName = ?, pyInitial = ?, quanPin = ?, sex = ?, remark = ?, remarkPyInitial = ?,
+        remarkQuanPin = ?, chatRoomNotify = ?, chatRoomOwner = ?, smallHeadImgUrl = ?
+      WHERE chatroomId = ?
+    `);
+
+    updateStmt.run(
+      newData.nickName || existingRoom.nickName,
+      newData.pyInitial || existingRoom.pyInitial,
+      newData.quanPin || existingRoom.quanPin,
+      newData.sex || existingRoom.sex,
+      newData.remark || existingRoom.remark,
+      newData.remarkPyInitial || existingRoom.remarkPyInitial,
+      newData.remarkQuanPin || existingRoom.remarkQuanPin,
+      newData.chatRoomNotify || existingRoom.chatRoomNotify,
+      newData.chatRoomOwner || existingRoom.chatRoomOwner,
+      newData.smallHeadImgUrl || existingRoom.smallHeadImgUrl,
+      chatroomId
+    );
+
+    console.log(`Updated room: ${chatroomId}`);
+  }
+  // 方法6：查询所有联系人数据
+  findAllContacts() {
+    const stmt = this.db.prepare('SELECT * FROM contact');
+    const rows = stmt.all(); // 获取所有记录
+    return rows;
+  }
+
+  // 方法7：查询所有房间数据
+  findAllRooms() {
+    const stmt = this.db.prepare('SELECT * FROM room');
+    const rows = stmt.all(); // 获取所有记录
+    return rows;
+  }
+}
+
+export const db = new myDB();

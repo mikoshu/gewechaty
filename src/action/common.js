@@ -12,17 +12,69 @@ import {MiniApp} from '@/class/MINIAPP.js'
 import {AppMsg} from '@/class/APPMSG.js'
 import {MessageType} from '@/type/MessageType'
 
+export let isCached = false
+
+export const setCached = (value) => {
+  isCached = value
+}
+
+export const getCached = () => {
+  return isCached
+}
+
 const appId = getAppId()
+
+// 检查是否是 Contact 类组成的数组
+function isArrayOfContact(arr) {
+  // 先判断是否是数组
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+  // 判断数组中的每个元素是否是 Contact 的实例
+  return arr.every(item => item instanceof Contact);
+}
+
+function isArrayOfString(arr) {
+  // 先判断是否是数组
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+  // 判断数组中的每个元素是否是 string
+  return arr.every(item => typeof item === 'string');
+}
+
 // 发送消息 支持文本 图片 文件 语音 视频 小程序 app 等
 export const say = async (content, toWxid, ats) => {
   try{
-    console.log('say', content, toWxid, ats)
-    if(typeof content === 'string'){
+    if(typeof content === 'string'){ // 处理文本消息
+      let atString = ''
+      if(ats){ // 处理ats 支持单个和多个
+        let flag = false
+        if(ats === '@all'){
+          atString = 'notify@all'
+          content = '@所有人 '+content
+          flag = true
+        }
+        if(ats instanceof Contact){
+          atString = ats._wxid
+          content = `@${ats.name()} ` + content
+          flag = true
+        }
+        if(isArrayOfContact(ats)){
+          atString = ats.map(item => item._wxid).join(',')
+          const start = ats.map(item => '@'+item.name()).join(' ')
+          content = start + ' ' + content
+          flag = true
+        }
+        if(!flag){
+          console.log('无法发送的ats类型')
+        }
+      }
       return SendText({
         appId,
         content,
         toWxid,
-        ats
+        ats: atString
       })
     }else if(content instanceof Filebox){ // filebox
       switch(content.type){

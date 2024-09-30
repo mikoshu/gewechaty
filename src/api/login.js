@@ -36,6 +36,13 @@ export const CheckOnline = (data, config = {}) => {
   return post('/login/checkOnline', data, config)
 }
 
+export const Logout = (data, config = {}) => {
+  Object.assign(config, {
+    allCode: true
+  })
+  return post('/login/logout', data, config)
+}
+
 
 // export const MobileRegist = (data: MobileRegistParams, config: configParams = {}) => {
 //   data.passWord = setPassword(data.passWord)

@@ -14,6 +14,7 @@ export class Message {
     // 从 JSON 数据结构中提取所需信息
     this.fromId = data.Data.FromUserName.string
     this.toId = data.Data.ToUserName.string
+    this.isRoom = data.Data.FromUserName.string.endsWith('@chatroom')
     this._msgId = data.Data.MsgId || null;
     this._newMsgId = data.Data.NewMsgId || null;
     this._text = data.Data.Content.string || '';
@@ -32,7 +33,7 @@ export class Message {
     return this.fromId.includes('gh_') || this.fromId === 'weixin'
   }
   from() { // 发送者
-    if(this.room()){
+    if(this.isRoom){
       return getContact(this._text.split(':\n')[0])
     }
     return getContact(this.fromId);
@@ -42,9 +43,8 @@ export class Message {
     return getContact(this.toId);
   }
 
-  async room() { // 是否是群聊消息
-    const isRoom = this.fromId.includes('@chatroom')
-    if(isRoom){
+  async room() { // 是否是群聊消息 是则返回群信息
+    if(this.isRoom){
       return await getRoomInfo(this.fromId)
     }else{
       return Promise.resolve(false)
@@ -52,7 +52,7 @@ export class Message {
   }
 
   text() { // 消息内容
-    if(this.room()){
+    if(this.fromId.endsWith('@chatroom')){
       return this._text.split(':\n').slice(1).join(':\n')
     }
     return this._text;
@@ -81,7 +81,7 @@ export class Message {
 
   async mentionSelf() { // 是否被@了
     return new Promise((resolve) => {
-      if(this.room() && this._pushContent && this._pushContent.includes('@了你')){
+      if(this.isRoom && this._pushContent && this._pushContent.includes('@了你')){
         resolve(true)
       }
       resolve(false)
@@ -122,7 +122,7 @@ export class Message {
     }
     return new Promise((resolve) => {
       let xml = ''
-      if(this.room()){
+      if(this.isRoom){
         xml = this._text.split(":\n")[1]
       }else{
         xml = this._text
@@ -152,58 +152,64 @@ export class Message {
 
   static getType(type, xml) {
     let parser, jObj
-    switch(type){
-      case 1:
-        return MessageType.Text
-      case 3:
-        return MessageType.Image
-      case 34:
-        return MessageType.Voice
-      case 37:
-        return MessageType.AddFriend
-      case 42:
-        return MessageType.Contact
-      case 43:
-        return MessageType.Video
-      case 47:
-        return MessageType.Emoji
-      case 48:
-        return MessageType.Location
-      case 49:
-        parser = new XMLParser();
-        jObj = parser.parse(xml);
-        console.log(jObj)
-        if(jObj.msg.appmsg.type === 5){
-          if(jObj.msg.appmsg.title === '邀请你加入群聊'){
-            return MessageType.RoomInvitation
-          }else{ // 公众号链接
-            return MessageType.Link
+    try{
+      switch(type){
+        case 1:
+          return MessageType.Text
+        case 3:
+          return MessageType.Image
+        case 34:
+          return MessageType.Voice
+        case 37:
+          return MessageType.AddFriend
+        case 42:
+          return MessageType.Contact
+        case 43:
+          return MessageType.Video
+        case 47:
+          return MessageType.Emoji
+        case 48:
+          return MessageType.Location
+        case 49:
+          parser = new XMLParser();
+          jObj = parser.parse(xml);
+          console.log(jObj)
+          if(jObj.msg.appmsg.type === 5){
+            if(jObj.msg.appmsg.title === '邀请你加入群聊'){
+              return MessageType.RoomInvitation
+            }else{ // 公众号链接
+              return MessageType.Link
+            }
+          }else if(jObj.msg.appmsg.type === 74){
+            return MessageType.FileStart
+          }else if(jObj.msg.appmsg.type === 6){
+            return MessageType.File
+          }else if(jObj.msg.appmsg.type === 33 || jObj.msg.appmsg.type === 36){
+            return MessageType.MiniApp
+          }else if (jObj.msg.appmsg.type === 57){
+            return MessageType.Quote
+          }else if (jObj.msg.appmsg.type === 2000){
+            return MessageType.Transfer
+          }else if (jObj.msg.appmsg.type === 2001){
+            return MessageType.RedPacket
+          }else if (jObj.msg.appmsg.type === 51){
+            return MessageType.VideoAccount
           }
-        }else if(jObj.msg.appmsg.type === 74){
-          return MessageType.FileStart
-        }else if(jObj.msg.appmsg.type === 6){
-          return MessageType.File
-        }else if(jObj.msg.appmsg.type === 33 || jObj.msg.appmsg.type === 36){
-          return MessageType.MiniApp
-        }else if (jObj.msg.appmsg.type === 57){
-          return MessageType.Quote
-        }else if (jObj.msg.appmsg.type === 2000){
-          return MessageType.Transfer
-        }else if (jObj.msg.appmsg.type === 2001){
-          return MessageType.RedPacket
-        }else if (jObj.msg.appmsg.type === 51){
-          return MessageType.VideoAccount
-        }
-      case 10002:
-        parser = new XMLParser();
-        jObj = parser.parse(xml);
-        if (jObj.appmsg.type === 'revokemsg'){
-          return MessageType.Revork
-        }else if (jObj.appmsg.type ==='pat'){
-          return MessageType.Pat
-        }
-        
+        case 10002:
+          parser = new XMLParser();
+          jObj = parser.parse(xml);
+          if (jObj.appmsg.type === 'revokemsg'){
+            return MessageType.Revork
+          }else if (jObj.appmsg.type ==='pat'){
+            return MessageType.Pat
+          }
+        default:
+          return MessageType.Unknown
+      }
+    }catch(e){
+      return MessageType.Unknown
     }
+    
 
   }
   

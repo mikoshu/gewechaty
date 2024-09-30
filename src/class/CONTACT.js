@@ -19,7 +19,7 @@ export class Contact {
   // 实例方法
 
   async say (textOrContactOrFileOrUrl) { // 回复消息
-    const res = await say(textOrContactOrFileOrUrl, this.fromId)
+    const res = await say(textOrContactOrFileOrUrl, this._wxid)
     return new ResponseMsg(res)
   }
 
@@ -78,7 +78,7 @@ export class Contact {
     return find(query)
   }
 
-  static async findAll() {
-    return findAll()
+  static async findAll(query) {
+    return findAll(query)
   }
 }

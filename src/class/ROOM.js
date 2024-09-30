@@ -1,13 +1,12 @@
 import { say, getWxId } from '@/action/common.js';
-import {inviteMember, delMember} from '@/action/room.js'
+import {inviteMember, delMember, findAll, find, changeRoomName, getAnnouncement, setAnnouncement} from '@/action/room.js'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 import {Contact} from '@/class/CONTACT.js'
 
 export class Room {
   constructor(data) {
-    console.log(data)
     this.chatroomId = data.chatroomId; // 房间ID
-    this.topic = data.nickName || ""; // 房间话题
+    this.name = data.nickName || ""; // 房间话题
     this.remark = data.remark || ""; // 房间备注
     this.isNotify = Boolean(data.chatRoomNotify)
     this.OwnerId = data.chatRoomOwner
@@ -38,7 +37,7 @@ export class Room {
     return delMember(to, this.chatroomId)
   }
 
-  async quit() {
+  async quit() { //todo
     // 退出房间
     return new Promise((resolve) => {
       console.log("Quit the room");
@@ -48,20 +47,19 @@ export class Room {
 
   async topic(newTopic) {
     // 修改房间话题
-    return new Promise((resolve) => {
-      this.topic = newTopic;
-      console.log(`Room topic changed to: ${newTopic}`);
-      resolve();
-    });
+    if(!newTopic){
+      return this.name
+    }
+    return changeRoomName(this.chatroomId, newTopic)
   }
 
-  async announce(text) {
+  async announce(text) { // todo
     // 设定公告
-    return new Promise((resolve) => {
-      this.announcements = text;
-      console.log(`Room announcement: ${text}`);
-      resolve();
-    });
+    if(!text){
+      return getAnnouncement(this.chatroomId)
+    }else{
+      return setAnnouncement(this.chatroomId, text)
+    }
   }
 
   async qrcode() {
@@ -133,18 +131,12 @@ export class Room {
 
   static async findAll(query) {
     // 查询符合条件的房间
-    return new Promise((resolve) => {
-      console.log(`Finding all rooms with query: ${query}`);
-      resolve([new Room("1"), new Room("2")]); // 假设返回两个房间
-    });
+    return findAll(query)
   }
 
   static async find(query) {
     // 查询单个符合条件的房间
-    return new Promise((resolve) => {
-      console.log(`Finding room with query: ${query}`);
-      resolve(new Room("found-room-id"));
-    });
+    return find(query)
   }
 }
 

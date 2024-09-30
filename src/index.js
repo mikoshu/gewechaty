@@ -9,7 +9,10 @@ export {Voice} from '@/class/VOICE.js'
 export {MiniApp} from '@/class/MINIAPP.js'
 export {AppMsg} from '@/class/APPMSG.js'
 export {Message} from '@/class/MESSAGE.js'
+import {Room} from '@/class/ROOM.js'
 import { getLocalIPAddress } from "@/utils/index.js";
+import {logout} from '@/action/login.js'
+
 
 
 export class GeweBot {
@@ -23,8 +26,10 @@ export class GeweBot {
     this.base_api = this.base_api || `http://${ip}:2531/v2/api`;
     this.file_api = this.file_api || `http://${ip}:2532/download`;
     this.route = this.route || '/getWechatCallBack'
+    this.use_cache = this.use_cache || false
     // 初始化类
     this.Contact = Contact;
+    this.Room = Room
     // 初始化事件监听器
   }
   start(){
@@ -35,6 +40,10 @@ export class GeweBot {
   }
   on(eventName, callback) {
     bot.on(eventName, callback)
+  }
+  logout(){
+    // 退出登录
+    return logout()
   }
  
 }
