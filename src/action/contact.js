@@ -15,7 +15,7 @@ export const setRemark = async (wxid, remark) => {
 }
 
 export const getContact = async (wxid) => { // 使用id查询
-  const contact = null
+  let contact = null
   contact = db.findOneByWxId(wxid)
   if(!contact){ // 未缓存 则查询
     const info = await getInfo({

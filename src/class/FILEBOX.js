@@ -19,12 +19,17 @@ export class Filebox {
     instance.name = getFileNameFromUrl(url)
     return instance
   }
-  static toDownload(url){
+  static toDownload(url, type, name){
     const instance = new Filebox()
-    const type = Filebox.getFileType(url)
+    if(!type){
+      type = Filebox.getFileType(url)
+    }
+    if(!name){
+      name = getFileNameFromUrl(url)
+    }
     instance.type = type
     instance.url = url
-    instance.name = getFileNameFromUrl(url)
+    instance.name = name
     return instance
   }
   toFile(dest){

@@ -8,6 +8,9 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 
 更多功能尚在开发（以下为已实现功能，更新后 api 可能会修改，谨慎使用）
 
+- 将在项目运行根目录创建一个ds.json 用于存储 appid token 和uuid 同时创建 ${appid}.db 用于缓存联系人和群信息，以确保可以使用联系人昵称和群名称查询相关信息，无需直接使用wxid查询， 如果确实需要使用wxid查询可以直接传入wxid，如`bot.Contact.find('wxid_xxxx')`。
+- 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用volta来管理node版本。
+
 ## 二、安装
 
 使用以下命令安装本插件：
@@ -59,6 +62,35 @@ bot
   .start()
   .then(async () => {
     // 启动成功
+    const friend = await bot.Contact.find({name: 'test'}) // 使用昵称查询
+    const friend2 = await bot.Contact.find({alias: 'test1'}) // 使用备注查询 
+    const friend3 = await bot.Contact.find('wxid_xxxxx') // 直接使用wxid查询
+    friend && friend.say('hello') // 给查询到的联系人发送消息
+
+    // 创建群
+    const room = await bot.Room.create([friend, friend2], '测试群22')
+    room.say('hello')
+
+    // 退出群
+    const room = await bot.Room.find({topic: '测试群22'})
+    room && room.quit()
+
+    // 同步群信息到缓存 例如修改了群名称等
+    const room = await bot.Room.find({topic: '测试群4'}) // 下载群头像
+    const r = await room.sync() // 返回更新后的 Room 类
+
+    // 获取群二维码
+    const room = await bot.Room.find({topic: '测试群4'}) // 下载群头像
+    const {qrBase64, qrTips} = await room.qrcode() // base64 
+    console.log(qrBase64)
+
+    const avatar = await room.avatar() // 获取群头像
+    avatar.toFile('path/to/download/avatar.jpg') // 保存群头像到本地
+
+    room.say('test', [friend, friend2]) // 通知指定成员
+
+    room.say('test', '@all') // 通知全员
+
   })
   .catch((e) => {
     console.error(e);
@@ -211,6 +243,29 @@ const bot = new GeweBot({
 |----------------------------|--------------------|----------------------------------------------------|
 | `static async find(query)` | `Promise<Contact>` | 根据查询条件查找联系人。（query 为 wxid 或 Contact 类） |
 | `static async findAll()`   | `Promise`          | 查找通讯录列表返回所有好友 wxid 列表                 |
+
+### Room 类方法说明
+
+| **方法名**                              | **返回值类型**         | **说明**                     |
+|-----------------------------------------|------------------------|----------------------------|
+| `async sync()`                          | `Promise`              | 同步房间信息                 |
+| `async say(textOrContactOrFileOrUrl)`   | `Promise<ResponseMsg>` | 发送消息到房间               |
+| `async add(contact)`                    | `Promise`              | 添加成员到房间               |
+| `async del(contact)`                    | `Promise`              | 删除房间成员                 |
+| `async quit()`                          | `Promise`              | 退出房间                     |
+| `async topic(string)`                   | `Promise<string>`      | 修改房间话题，或获取当前话题  |
+| `async announce(string)`                | `Promise`              | 获取或设置房间公告           |
+| `async qrcode()`                        | `Promise`              | 获取房间的二维码             |
+| `async alias(contact)`                  | `Promise<string>`      | 获取成员别名                 |
+| `async has(contact)`                    | `Promise<boolean>`     | 检查房间是否有某个成员       |
+| `async memberAll(string)`               | `Promise<[Contact]>`   | 获取所有成员或符合查询的成员 |
+| `async member(string)`                  | `Promise<Contact>`     | 获取单个成员                 |
+| `async owner()`                         | `Promise<Contact>`     | 获取房间的拥有者             |
+| `async avatar()`                        | `Promise<FileBox>`     | 获取房间头像                 |
+| `async create([contact], roomName)`     | `Promise`              | 创建新房间                   |
+| `async findAll({name: 'name'} or null)` | `Promise<[Room]>`      | 查询符合条件的房间           |
+| `async find({name: 'name'})`            | `Promise<Room>`        | 查询单个符合条件的房间       |
+
 
 ### MessageType 类型表
 

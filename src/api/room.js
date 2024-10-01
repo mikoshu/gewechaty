@@ -23,3 +23,23 @@ export const GetAnnouncement = (data, config) => {
 export const SetAnnouncement = (data, config) => {
   return post('/group/setChatroomAnnouncement', data, config)
 }
+
+export const GetRoomMemberInfo = (data, config) => {
+  return post('/group/getChatroomMemberDetail', data, config)
+}
+
+export const GetRoomMemberList = (data, config) => {
+  return post('/group/getChatroomMemberList', data, config)
+}
+
+export const CreateRoom = (data, config) => {
+  return post('/group/createChatroom', data, config)
+}
+
+export const QuitRoom = (data, config) => {
+  return post('/group/quitChatroom', data, config)
+}
+
+export const GetQrcode = (data, config) => {
+  return post('/group/getChatroomQrCode', data, config)
+}

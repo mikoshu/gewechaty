@@ -1,7 +1,11 @@
 import { say, getWxId } from '@/action/common.js';
-import {inviteMember, delMember, findAll, find, changeRoomName, getAnnouncement, setAnnouncement} from '@/action/room.js'
+import {inviteMember, delMember, findAll, find, 
+  changeRoomName, getAnnouncement, setAnnouncement, getQrcode,
+  getRoomMemberInfo, getRoomMemberList, createRoom, quitRoom, updateRoomInfo} from '@/action/room.js'
+import {getContact} from '@/action/contact.js'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 import {Contact} from '@/class/CONTACT.js'
+import {Filebox} from '@/class/FILEBOX'
 
 export class Room {
   constructor(data) {
@@ -10,10 +14,13 @@ export class Room {
     this.remark = data.remark || ""; // 房间备注
     this.isNotify = Boolean(data.chatRoomNotify)
     this.OwnerId = data.chatRoomOwner
-    this.avatar = data.smallHeadImgUrl
+    this.avatarImg = data.smallHeadImgUrl
   }
   // 实例方法
-
+  async sync() {
+    // 同步房间信息
+    return updateRoomInfo(this.chatroomId);
+  }
   async say (textOrContactOrFileOrUrl, ats) { // 回复消息
     const res = await say(textOrContactOrFileOrUrl, this.chatroomId, ats)
     return new ResponseMsg(res)
@@ -25,13 +32,13 @@ export class Room {
     return this;
   }
 
-  async add(contact, reason = '') {
+  async add(contact, reason = '') { //ok
     // 添加成员
     let to = getWxId(contact)
     return inviteMember(to, this.chatroomId, reason)
   }
 
-  async del(contact) {
+  async del(contact) { //ok
     // 删除成员
     let to = getWxId(contact)
     return delMember(to, this.chatroomId)
@@ -39,13 +46,10 @@ export class Room {
 
   async quit() { //todo
     // 退出房间
-    return new Promise((resolve) => {
-      console.log("Quit the room");
-      resolve();
-    });
+    return quitRoom(this.chatroomId)
   }
 
-  async topic(newTopic) {
+  async topic(newTopic) { //ok
     // 修改房间话题
     if(!newTopic){
       return this.name
@@ -53,7 +57,7 @@ export class Room {
     return changeRoomName(this.chatroomId, newTopic)
   }
 
-  async announce(text) { // todo
+  async announce(text) { // ok
     // 设定公告
     if(!text){
       return getAnnouncement(this.chatroomId)
@@ -62,58 +66,73 @@ export class Room {
     }
   }
 
-  async qrcode() {
+  async qrcode() { // todo
     // 返回房间的二维码
-    return new Promise((resolve) => {
-      const qrcode = `QR code for room ${this.id}`;
-      console.log(qrcode);
-      resolve(qrcode);
-    });
+    return getQrcode(this.chatroomId)
   }
 
-  async alias(contact) {
+  async alias(contact) { // ok
     // 获取成员别名
-    return new Promise((resolve) => {
-      console.log(`Alias for ${contact}: [alias name]`);
-      resolve("[alias name]");
-    });
+    const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
+    if(data.length === 0){
+      return null
+    }
+    return data[0].remark || null
   }
 
-  async has(contact) {
+  async has(contact) { // 是否通过memberflag判断？
     // 检查房间是否有某个成员
-    return new Promise((resolve) => {
-      const hasContact = this.members.includes(contact);
-      resolve(hasContact);
-    });
+    const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
+    if(data.length === 0){
+      return false
+    }
+    return data[0].memberFlag !== null
   }
 
   async memberAll(query) {
     // 获取符合查询的所有成员
-    return new Promise((resolve) => {
-      const result = this.members.filter(member => member.includes(query));
-      resolve(result);
-    });
+    const {memberList} = await getRoomMemberList(this.chatroomId)
+    if(memberList.length === 0){
+      return []
+    }
+    if(!query){
+      return memberList.map(item => {
+        return new Contact(item)
+      })
+    }
+    const arr = []
+    memberList.map(item => {
+      if(item.nickName === query || item.displayName === query){
+        arr.push(new Contact(item)) 
+      }
+    })
+    return arr
   }
 
-  async member(queryArg) {
+  async member(query) {
     // 获取单个成员
-    return new Promise((resolve) => {
-      const result = this.members.find(member => member.includes(queryArg));
-      resolve(result || null);
-    });
+    const {memberList} = await getRoomMemberList(this.chatroomId)
+    if(memberList.length === 0){
+      return null
+    }
+    for(let item of memberList){
+      if(item.nickName === query || item.displayName === query){
+        return new Contact(item)
+      }
+    }
+    return null
   }
 
-  owner() {
+  async owner() {
     // 获取房间的拥有者
-    return this.ownerContact;
+    return getContact(this.OwnerId);
   }
 
   async avatar() {
     // 返回房间的头像
     return new Promise((resolve) => {
-      const avatar = `Avatar for room ${this.id}`;
-      console.log(avatar);
-      resolve(avatar);
+      const filebox = Filebox.toDownload(this.avatarImg, 'image', 'avatar.jpg');
+      resolve(filebox);
     });
   }
 
@@ -121,12 +140,7 @@ export class Room {
 
   static async create(contactList, topic) {
     // 创建房间
-    return new Promise((resolve) => {
-      const room = new Room("generated-id", topic);
-      room.members = contactList;
-      console.log(`Room created with topic: ${topic}`);
-      resolve(room);
-    });
+    return createRoom(contactList, topic)
   }
 
   static async findAll(query) {
