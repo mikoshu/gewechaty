@@ -70,7 +70,8 @@ class myDB {
       remarkQuanPin TEXT,
       chatRoomNotify INTEGER,
       chatRoomOwner TEXT,
-      smallHeadImgUrl TEXT
+      smallHeadImgUrl TEXT,
+      memberList TEXT
     `;
 
     const tableExists = this.db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`).get(tableName);
@@ -78,7 +79,15 @@ class myDB {
       console.log(`Table ${tableName} does not exist, creating...`);
       this.db.exec(`CREATE TABLE ${tableName} (${tableSchema})`);
     } else {
-      console.log(`Table ${tableName} already exists.`);
+      // 检查是否存在 memberList 字段，如果不存在则添加
+      const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
+      const columnNames = columns.map(column => column.name);
+      if (!columnNames.includes('memberList')) {
+        console.log(`Adding memberList column to ${tableName} table...`);
+        this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN memberList TEXT`);
+      } else {
+        console.log(`Table ${tableName} already exists and has memberList column.`);
+      }
     }
   }
 
@@ -116,6 +125,9 @@ class myDB {
   findOneByChatroomId(chatroomId) {
     const stmt = this.db.prepare('SELECT * FROM room WHERE chatroomId = ?');
     const row = stmt.get(chatroomId);
+    if (row && row.memberList) {
+      row.memberList = JSON.parse(row.memberList); // 将 memberList 转换为 JSON 格式
+    }
     return row ? row : null;
   }
 
@@ -172,8 +184,8 @@ class myDB {
     const insertStmt = this.db.prepare(`
       INSERT INTO room (
         chatroomId, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
-        remarkQuanPin, chatRoomNotify, chatRoomOwner, smallHeadImgUrl
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        remarkQuanPin, chatRoomNotify, chatRoomOwner, smallHeadImgUrl, memberList
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     insertStmt.run(
@@ -187,7 +199,8 @@ class myDB {
       room.remarkQuanPin || null,
       room.chatRoomNotify || null,
       room.chatRoomOwner || null,
-      room.smallHeadImgUrl || null
+      room.smallHeadImgUrl || null,
+      room.memberList ? JSON.stringify(room.memberList) : null // 转换为 JSON 字符串
     );
 
     console.log(`Inserted new room: ${room.chatroomId}`);
@@ -246,7 +259,7 @@ class myDB {
     const updateStmt = this.db.prepare(`
       UPDATE room SET
         nickName = ?, pyInitial = ?, quanPin = ?, sex = ?, remark = ?, remarkPyInitial = ?,
-        remarkQuanPin = ?, chatRoomNotify = ?, chatRoomOwner = ?, smallHeadImgUrl = ?
+        remarkQuanPin = ?, chatRoomNotify = ?, chatRoomOwner = ?, smallHeadImgUrl = ?, memberList = ?
       WHERE chatroomId = ?
     `);
 
@@ -261,6 +274,7 @@ class myDB {
       newData.chatRoomNotify || existingRoom.chatRoomNotify,
       newData.chatRoomOwner || existingRoom.chatRoomOwner,
       newData.smallHeadImgUrl || existingRoom.smallHeadImgUrl,
+      newData.memberList ? JSON.stringify(newData.memberList) : existingRoom.memberList, // 转换为 JSON 字符串
       chatroomId
     );
 
@@ -276,8 +290,13 @@ class myDB {
   // 方法7：查询所有房间数据
   findAllRooms() {
     const stmt = this.db.prepare('SELECT * FROM room');
-    const rows = stmt.all(); // 获取所有记录
-    return rows;
+    const rows = stmt.all();
+    return rows.map(row => {
+      if (row.memberList) {
+        row.memberList = JSON.parse(row.memberList); // 将 memberList 转换为 JSON 格式
+      }
+      return row;
+    });
   }
 }
 

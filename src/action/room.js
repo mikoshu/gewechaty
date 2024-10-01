@@ -1,10 +1,10 @@
 import {GetRoomInfo, InviteMember, DelMember, 
-  ChangeRoomName, GetAnnouncement, SetAnnouncement,
+  ChangeRoomName, GetAnnouncement, SetAnnouncement,JoinRoom,
   GetRoomMemberInfo, GetRoomMemberList, CreateRoom, QuitRoom, GetQrcode} from '@/api/room.js'
 import {Room} from '@/class/ROOM.js'
 import {getAppId} from '@/utils/auth.js'
 import {db} from '@/sql/index.js'
-import {getCached} from '@/action/common.js'
+// import {getCached} from '@/action/common.js'
 const appId = getAppId()
 
 export const getRoomInfo = async (roomId) => {
@@ -23,6 +23,15 @@ export const getRoomInfo = async (roomId) => {
   return new Room(room)
 }
 
+
+export const getRoomLiveInfo = async (roomId) => {
+  let room = await GetRoomInfo({
+      appId,
+      chatroomId: roomId,
+    })
+  return room
+}
+
 export const updateRoomInfo = async (roomId) => {
   let room = null
   room = db.findOneByChatroomId(roomId)
@@ -32,6 +41,7 @@ export const updateRoomInfo = async (roomId) => {
   })
 
   if(room){ // 存在则更新否则插入
+    console.log('更新房间信息', roomInfo)
     db.updateRoom(roomId, roomInfo)
   }else{
     db.insertRoom(roomInfo)
@@ -151,5 +161,12 @@ export const getQrcode = async (chatroomId) => {
   return GetQrcode({
     appId,
     chatroomId
+  })
+}
+
+export const joinRoom = async (url) => {
+  return JoinRoom({
+    appId,
+    url
   })
 }

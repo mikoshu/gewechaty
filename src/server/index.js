@@ -8,11 +8,17 @@ import {login} from '@/action/login.js'
 import {cacheAllContact} from '@/action/contact'
 import {setCached} from '@/action/common'
 import {CheckOnline} from '@/api/login'
-import { getLocalIPAddress } from "@/utils/index.js";
+import { getLocalIPAddress, compareMemberLists, getAttributesFromXML } from "@/utils/index.js";
 import {Message} from '@/class/MESSAGE.js'
-import { botEmitter } from '@/bot.js'
+import {Contact} from '@/class/CONTACT.js'
+import {Room} from '@/class/ROOM.js'
+import { botEmitter, roomEmitter } from '@/bot.js'
 import { getAppId } from '@/utils/auth.js';
 import {db} from '@/sql/index.js'
+import {MessageType} from '@/type/MessageType'
+import {RoomInvitation} from '@/class/ROOMINVITATION.js'
+import {getRoomLiveInfo} from '@/action/room.js'
+import { Friendship } from '@/class/FRIENDSHIP';
 export const bot = botEmitter
 
 const ip = getLocalIPAddress()
@@ -30,25 +36,69 @@ export const startServe = (option) => {
   app.use(serve(join(process.cwd(), option.static)))
 
   // 定义一个接口，能够同时处理 GET 和 POST 请求
-  router.post(option.route, (ctx) => {
+  router.post(option.route, async (ctx) => {
     try{
       const body = ctx.request.body; // 获取 POST 请求的 body 数据
-      console.log('POST 请求的数据:', body);
+      if(option.debug){
+        console.log(body);
+      }
+      
       if(body && body.TypeName === 'Offline'){
         console.log('掉线咯！！！')
         process.exit(1);
       }
-
+      
+      bot.emit('all', body)
       // 判断是否是微信消息
       if(body.Appid && body.TypeName === 'AddMsg'){ // 大部分消息类型都为 AddMsg
-        if(option.use_cache){ // 开启缓存时 缓存内容
-
-        } 
         // 消息hanlder
         const msg = new Message(body)
         // 发送消息
-        bot.emit('message', msg)
+        
+        const type = msg.type()
+        if(type === MessageType.RoomInvitation){ // 群邀请
+          let obj = msg.getXml2Json(msg.text())
+          obj.formId = msg.fromId
+          bot.emit(`room-invite`, new RoomInvitation(obj))
+        }else if(type === MessageType.AddFriend){ // 好友请求
+          let obj = getAttributesFromXML(msg.text())
+          bot.emit('friendship', new Friendship(obj))
+        }else{
+          bot.emit('message', msg)
+        }
+      }else if(body && body.TypeName === 'ModContacts'){ // 好友消息， 群信息变更
+        // 消息hanlder
+        const id = body.Data.UserName.string
+        if(id.endsWith('@chatroom')){ // 群消息
+          const oldInfo = db.findOneByChatroomId(id)
+          if(body.Data.SmallHeadImgUrl){ // 头像变动表示群成员变动
+            const newInfo = await getRoomLiveInfo(id)
+            const obj = compareMemberLists(oldInfo.memberList, newInfo.memberList)
+            if(obj.added.length > 0){
+              obj.added.map((item) => {
+                const member = new Contact(item)
+                roomEmitter.emit(`join:${id}`, new Room(newInfo), member, member.inviterUserName)
+              })
+              
+            }
+            if(obj.removed.length > 0){
+              obj.removed.map((item) => {
+                const member = new Contact(item)
+                roomEmitter.emit(`leave:${id}`, new Room(newInfo), member)
+              })
+            }
+            db.updateRoom(id, newInfo)
+          }
+          if(body.Data.NickName.string !== oldInfo.nickName){ // 群名称变动
+            const newInfo = await getRoomLiveInfo(id)
+            roomEmitter.emit(`topic:${id}`, new Room(newInfo), body.Data.NickName.string, oldInfo.nickName)
+            db.updateRoom(id, newInfo)
+          }
+        }
       }
+
+
+
       // "TypeName": "ModContacts", 好友消息， 群信息变更 
       // "TypeName": "DelContacts" 删除好友
       // "TypeName": "DelContacts" 退出群聊
@@ -106,7 +156,7 @@ export const startServe = (option) => {
         if(res.ret === 200){
           console.log(`设置回调地址为：${callBackUrl}`)
           console.log('服务启动成功')
-          resolve(app)
+          resolve({app, router})
         }else{
           console.log('回调地址设置失败，请确定gewechat能访问到回调地址网络')
           reject(res)

@@ -25,6 +25,9 @@ export class Message {
     this._pushContent = data.Data.PushContent || '';
     this._msgSeq = data.Data.MsgSeq || null;
     this._status = data.Data.Status || null;
+    if(this.isRoom ){ // 执行一次 自动插入房间数据
+      getRoomInfo(this.fromId)
+    }
   }
   // 静态属性
   static MessageType = MessageType

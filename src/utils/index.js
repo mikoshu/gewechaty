@@ -1,4 +1,5 @@
 import os from 'os';
+import { XMLParser} from "fast-xml-parser";
 export const getLocalIPAddress = () => {
   const interfaces = os.networkInterfaces();
   let localIPAddress = '';
@@ -58,3 +59,42 @@ export const joinURL = (...parts) => {
     return validParts.join('/');
 }
 // getFileNameFromUrl('http://121.37.193.110:2532/download/20240924/wx_jk5smGp4fqSz4A3haz0_7/76764118-925f-421e-a93e-c3dbc6f4651f.png')
+
+export const compareMemberLists = (oldMembers, newMembers) => {
+    // 将成员列表转换为以 wxid 为键的对象，便于查找
+    const oldMemberMap = oldMembers.reduce((map, member) => {
+      map[member.wxid] = member;
+      return map;
+    }, {});
+  
+    const newMemberMap = newMembers.reduce((map, member) => {
+      map[member.wxid] = member;
+      return map;
+    }, {});
+  
+    // 找出新增的成员
+    const addedMembers = newMembers.filter(member => !oldMemberMap[member.wxid]);
+  
+    // 找出减少的成员
+    const removedMembers = oldMembers.filter(member => !newMemberMap[member.wxid]);
+  
+    return {
+      added: addedMembers,
+      removed: removedMembers
+    };
+  }
+
+  export const getAttributesFromXML = (xmlString) => {
+    // 创建 XMLParser 实例，配置使其保留属性值
+    const parser = new XMLParser({
+      ignoreAttributes: false, // 不忽略属性
+      attributeNamePrefix: '', // 移除默认的属性前缀
+    });
+  
+    // 解析 XML 字符串
+    const parsed = parser.parse(xmlString);
+  
+    // 提取 <msg> 标签及其属性
+    const msgAttributes = parsed.msg;
+    return msgAttributes;
+  }

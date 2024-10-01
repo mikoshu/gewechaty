@@ -43,3 +43,7 @@ export const QuitRoom = (data, config) => {
 export const GetQrcode = (data, config) => {
   return post('/group/getChatroomQrCode', data, config)
 }
+
+export const JoinRoom = (data, config) => {
+  return post('/group/agreeJoinRoom', data, config)
+}

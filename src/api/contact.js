@@ -20,3 +20,7 @@ export const findAllContact = (data, config) => {
   return post('/contacts/fetchContactsList', data, config)
 }
 
+export const AddContact = (data, config) => {
+  return post('/contacts/addContacts', data, config)
+}
+

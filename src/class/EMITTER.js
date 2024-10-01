@@ -10,8 +10,8 @@ class EventEmitter {
     this.EventNames.push(...eventNames)
   }
 
-  on(eventName, callback) {
-    if(!this.EventNames.includes(eventName)){
+  on(eventName, callback, force) {
+    if(!this.EventNames.includes(eventName) && !force){
       throw new Error('event not found')
     }
     if (!this.events[eventName]) {
@@ -46,8 +46,6 @@ class EventEmitter {
       this.events[eventName].forEach(callback => {
         callback.apply(this, args)
       })
-    }else{
-      console.log('emit event not found')
     }
   }
 

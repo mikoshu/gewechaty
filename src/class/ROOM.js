@@ -6,15 +6,19 @@ import {getContact} from '@/action/contact.js'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 import {Contact} from '@/class/CONTACT.js'
 import {Filebox} from '@/class/FILEBOX'
+import {roomEmitter} from '@/bot.js'
 
 export class Room {
   constructor(data) {
     this.chatroomId = data.chatroomId; // 房间ID
     this.name = data.nickName || ""; // 房间话题
     this.remark = data.remark || ""; // 房间备注
+    this.chatRoomNotify = data.chatRoomNotify; // 是否通知
+    this.chatRoomOwner = data.chatRoomOwner; // 房间拥有者
     this.isNotify = Boolean(data.chatRoomNotify)
     this.OwnerId = data.chatRoomOwner
-    this.avatarImg = data.smallHeadImgUrl
+    this.avatarImg = data.smallHeadImgUrl || data.bigHeadImgUrl
+    this.memberList = data.memberList || []
   }
   // 实例方法
   async sync() {
@@ -28,8 +32,8 @@ export class Room {
 
   on(event, listener) {
     // 绑定事件处理
-    console.log(`Event ${event} is listened`);
-    return this;
+    console.log('绑定事件处理', `${event}:${this.chatroomId}`)
+    roomEmitter.on(`${event}:${this.chatroomId}`, listener, true);
   }
 
   async add(contact, reason = '') { //ok

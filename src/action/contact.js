@@ -1,4 +1,4 @@
-import {setFriendRemark, findContact, getInfo, findAllContact} from '@/api/contact'
+import {setFriendRemark, findContact, getInfo, findAllContact, AddContact} from '@/api/contact'
 import {GetRoomInfo} from '@/api/room.js'
 import {getAppId} from '@/utils/auth.js'
 import {Contact} from '@/class/CONTACT'
@@ -64,27 +64,6 @@ export const find = async (content) => { // 使用name alias wxid查询
   
   return contact? new Contact(contact) : null
 
-  // 应为添加好友时使用
-  // try{
-  //   const {v3} = await findContact({
-  //     appId,
-  //     contactsInfo
-  //   })
-  //   if(v3 && v3.indexOf('v3_') !== 0){ // 此时为好友 v3为好友的wxid
-  //     const info = await getInfo({
-  //       appId,
-  //       wxids: [v3]
-  //     })
-  //     const contact = new Contact(info[0])
-  //     return contact
-  //   }else{
-  //     console.log('未找到')
-  //     return null
-  //   }
-  // }catch(e){
-  //   console.error(e)
-  //   return null
-  // }
 }
 
 export const findAll = async (query) => {
@@ -143,6 +122,55 @@ export const cacheAllContact = async () => {
     }
   }catch(e){
     console.error(e)
+    return null
+  }
+}
+
+export const acceptContact = async (scene, v3, v4) => {
+  const res = await AddContact({
+    appId,
+    scene,
+    option: 3, // 操作类型，2添加好友 3同意好友 4拒绝好友
+    v3,
+    v4,
+    content: 'hello'
+  })
+  return res
+}
+
+export const addContact = async (v3, v4, content) => {
+  const res = await AddContact({
+    appId,
+    scene: 15,
+    option: 2, // 操作类型，2添加好友 3同意好友 4拒绝好友
+    v3,
+    v4,
+    content
+  })
+  return res
+}
+
+export const rejectContact = async (scene, v3, v4, content) => {
+  const res = await AddContact({
+    appId,
+    scene,
+    option: 4, // 操作类型，2添加好友 3同意好友 4拒绝好友
+    v3,
+    v4,
+    content
+  })
+  return res
+}
+
+export const searchContact = async (mobile) => {
+  // 应为添加好友时使用
+  const res = await findContact({
+    appId,
+    contactsInfo: mobile
+  })
+  if(res){
+    return res
+  }else{
     return null
   }
 }

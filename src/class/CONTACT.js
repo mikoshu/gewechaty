@@ -7,13 +7,14 @@ export class Contact {
     this._alias = contactData.remark || this._name;
     // 判断是否是微信好友 暂时不支持
     this._isFriend = true;
-    this._wxid = contactData.userName;
+    this._wxid = contactData.userName || contactData.wxid || null;
     this._type = 1;
     this._gender = contactData.sex;
     this._province = contactData.province || null;
     this._city = contactData.city || null;
-    this._avatarUrl = contactData.bigHeadImgUrl || '';
+    this._avatarUrl = contactData.bigHeadImgUrl || contactData.smallHeadImgUrl || '';
     this._isSelf = false;
+    this.inviterUserName = contactData.inviterUserName || ''
   }
 
   // 实例方法

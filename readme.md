@@ -2,14 +2,13 @@
 
 ## 一、简介
 
-gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)项目的二次封装，提供了更方便的使用方式。参考 wechaty 的 api 实现，以满足更快速开发的需求（由于gewechat接口限制无法平滑迁移只是提供更便捷的使用方法）。
+gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)项目的二次封装，提供了更方便的使用方式。参考 wechaty 的 api 实现，以满足更快速开发的需求（由于gewechat接口限制无法完全平滑迁移只是提供更便捷的使用方法，如有些同步的方法需要改为异步）。
 
 本项目基于 Gewechat，请先确认 Gewechat 已经能够正常启动，否则无法使用本插件。
 
-更多功能尚在开发（以下为已实现功能，更新后 api 可能会修改，谨慎使用）
-
 - 将在项目运行根目录创建一个ds.json 用于存储 appid token 和uuid 同时创建 ${appid}.db 用于缓存联系人和群信息，以确保可以使用联系人昵称和群名称查询相关信息，无需直接使用wxid查询， 如果确实需要使用wxid查询可以直接传入wxid，如`bot.Contact.find('wxid_xxxx')`。
-- 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用volta来管理node版本。
+- 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用[volta](https://volta.sh/)来管理node版本。
+
 
 ## 二、安装
 
@@ -27,16 +26,10 @@ npm install --save gewechaty
 
 ```javascript
 const {
-  GeweBot,
-  Filebox,
-  UrlLink,
-  WeVideo,
-  Voice,
-  MiniApp,
-  AppMsg,
-  Message,
+  GeweBot
 } = require("gewechaty");
 const bot = new GeweBot({
+  debugger: true, // 是否开启调试模式 默认false
   base_api: process.env.WEGE_BASE_API_URL, // Gewechat启动后的基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
   file_api: process.env.WEGE_FILE_API_URL, // Gewechat启动后的文件api地址base_api 默认为 `http://本机ip:2532/download`,
 });
@@ -58,10 +51,53 @@ bot.on("message", (msg) => {
   // 此处放回的msg为Message类型 可以使用Message类的方法
   onMessage(msg);
 });
+
+bot.on('friendship', (friendship) => { // 根据请求内容自动通过好友请求
+  // type() 方法与wechaty不同 返回内容为场景值
+  const scene = friendship.type() // 获取场景 3 ：微信号搜索  4 ：QQ好友  8 ：来自群聊  15：手机号
+  if(friendship.hello() === 'ding' && scene === 15){ // 打招呼消息为ding 且是通过手机号添加的好友 则自动通过
+    friendship.accept()
+  }
+})
+
+bot.on('room-invite', async roomInvitation => { // 接受群邀请 
+  try {
+    await roomInvitation.accept()
+  } catch (e) {
+    console.error(e)
+  }
+})
+
+bot.on('all', msg => { // 如需额外的处理逻辑可以监听 all 事件 该事件将返回回调地址接收到的所有原始数据
+  console.log('received all event.')
+})
+
 bot
   .start()
-  .then(async () => {
-    // 启动成功
+  .then(async ({app, router}) => {
+    /**
+     * 由于本地需要启动一个web服务， 此时返回的app为一个koa创建的服务实例，
+     * router为koa-router实例，因此可以给其添加新的路由事件，一般用于第三方的webhook回调
+     * 让微信机器人可以通过其他三方的http请求发送通知
+     *  */  
+
+    // 添加一个路由用于接收其他三方的http请求 
+    // 如下代码可通过请求 http://localhost:3000/sendText?text=123 则会发送消息123 给test用户
+    router.get('/sendText', async (ctx) => {
+      const query = ctx.request.query; // 获取 GET 请求的 query 参数
+      const text = query.text; // 获取 text 参数的值
+      const contact = await bot.Contact.find({name: 'test'}) // 获取联系人
+      contact.say(text)
+      ctx.body = '发送成功'
+    })
+    app.use(router.routes()).use(router.allowedMethods());
+    
+
+    // 通过手机号添加好友
+    const contact = await bot.Friendship.search('150*******4')
+    bot.Friendship.add(contact, 'ding')
+
+    // 查找联系人方法
     const friend = await bot.Contact.find({name: 'test'}) // 使用昵称查询
     const friend2 = await bot.Contact.find({alias: 'test1'}) // 使用备注查询 
     const friend3 = await bot.Contact.find('wxid_xxxxx') // 直接使用wxid查询
@@ -80,7 +116,7 @@ bot
     const r = await room.sync() // 返回更新后的 Room 类
 
     // 获取群二维码
-    const room = await bot.Room.find({topic: '测试群4'}) // 下载群头像
+    const room = await bot.Room.find({topic: '测试群4'})
     const {qrBase64, qrTips} = await room.qrcode() // base64 
     console.log(qrBase64)
 
@@ -90,6 +126,22 @@ bot
     room.say('test', [friend, friend2]) // 通知指定成员
 
     room.say('test', '@all') // 通知全员
+
+
+    // 监听群消息
+    const room = await bot.Room.find({topic: '测试群4'})
+    if(room){
+      room.on('join', (room, contact) => {
+        room.say(`有新人咯！欢迎欢迎, ${contact._name} 加入了群聊`, '@all')
+      })
+      room.on('leave', (room, contact) => {
+        room.say(`有人退群咯, ${contact._name} 离开了群聊`, '@all')
+      })
+      room.on('topic', (room, newTopic, oldTopic) => {
+        room.say(`群名由“${oldTopic}”换成了“${newTopic}”`, '@all')
+      })
+    }
+
 
   })
   .catch((e) => {
@@ -104,6 +156,18 @@ bot
 基本支持 wechaty 的 Message 方法
 
 ```javascript
+const {
+  GeweBot,
+  Filebox,
+  UrlLink,
+  WeVideo,
+  Voice,
+  MiniApp,
+  AppMsg,
+  Message,
+} = require("gewechaty");
+
+
 //直接调用msg.say()将会回复消息，个人消息和群消息一支
 // 发送文本消息
 msg.say("Hello, World!");
@@ -121,6 +185,7 @@ const urlLink = new UrlLink({
   linkUrl: "https://www.baidu.com",
 });
 await msg.say(urlLink);
+
 // 发送名片 传入一个Contact类型的对象
 const friend = await msg.from();
 msg.say(friend);
@@ -129,7 +194,7 @@ msg.say(friend);
 const video = new WeVideo({
   thumbUrl: `${bot.proxy}/test/avatar.jpg`, // 视频封面
   videoUrl: `${bot.proxy}/test/test2.mp4`, // 视频文件url
-  videoDuration: 9, // 视频时长 似乎随便传个值就行
+  videoDuration: 9, // 视频时长单位秒 似乎随便传个值就行
 });
 msg.say(video);
 
@@ -165,7 +230,7 @@ const filebox = await msg.toFileBox();
 const fileurl = path.join(staticUrl, filebox.name);
 filebox.toFile(fileurl);
 
-// 消息撤回 所有消息均支持撤回
+// 消息撤回
 const myMsg = await msg.say(filebox);
 setTimeout(() => {
   myMsg.revork();
@@ -293,6 +358,44 @@ const bot = new GeweBot({
 | `Revork`         | 撤回消息     |
 | `Pat`            | 拍一拍       |
 | `Location`       | 位置消息     |
+
+### Friendship 类方法表
+
+| **方法名**                                | **返回值类型**        | **说明**                                     |
+|-------------------------------------------|-----------------------|--------------------------------------------|
+| `accept()`                                | `Promise`             | 接受好友请求。                                |
+| `reject(content)`                         | `Promise`             | 拒绝好友请求。                                |
+| `hello()`                                 | `string`              | 获取好友请求的内容。                          |
+| `contact()`                               | `Contact`             | 获取好友的联系人信息。                        |
+| `type()`                                  | `number`              | 获取好友请求的来源类型（如微信号搜索、群聊等）。 |
+| `static async search(mobile)`             | `Promise<Friendship>` | 根据手机号搜索联系人。                        |
+| `static async add(contact, helloMessage)` | `Promise`             | 添加联系人，发送好友请求。                     |
+
+
+### RoomInvitation 类方法表
+
+| **方法名**            | **返回值类型**       | **说明**                                               |
+|-----------------------|----------------------|--------------------------------------------------------|
+| `accept()`            | `Promise<void>`      | 接受房间邀请。                                          |
+| `inviter()`           | `Promise<Contact>`   | 获取邀请人，返回一个 `Contact` 对象。                   |
+| `topic()`             | `Promise<string>`    | 获取房间邀请的主题。                                    |
+| `date()`              | `Promise<Date>`      | 获取房间邀请的日期和时间。                              |
+| `age()`               | `Promise<number>`    | 获取邀请的年龄（以秒为单位）。                          |
+
+
+免责声明【必读】
+
+- 本框架仅供学习和技术研究使用，不得用于任何商业或非法行为，否则后果自负。
+
+- 本框架的作者不对本工具的安全性、完整性、可靠性、有效性、正确性或适用性做任何明示或暗示的保证，也不对本工具的使用或滥用造成的任何直接或间接的损失、责任、索赔、要求或诉讼承担任何责任。
+
+- 本框架的作者保留随时修改、更新、删除或终止本工具的权利，无需事先通知或承担任何义务。
+
+- 本框架的使用者应遵守相关法律法规，尊重微信的版权和隐私，不得侵犯微信或其他第三方的合法权益，不得从事任何违法或不道德的行为。
+
+- 本框架的使用者在下载、安装、运行或使用本工具时，即表示已阅读并同意本免责声明。如有异议，请立即停止使用本工具，并删除所有相关文件。
+
+
 
 ## 五、贡献
 
