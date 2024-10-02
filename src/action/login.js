@@ -1,5 +1,5 @@
 import qrTerminal from 'qrcode-terminal'
-import { GetToken, GetQrcode, CheckLogin, Logout } from "@/api/login.js";
+import { GetToken, GetQrcode, CheckLogin, Logout, Reconnection } from "@/api/login.js";
 import { setToken, setAppId, getAppId, setUuid, getUuid } from '@/utils/auth.js';
 
 let loginStatus = 0
@@ -98,6 +98,22 @@ export const login = async (callbackUrl) => {
 export const logout = async () => {
   try{
     const res = await Logout({
+      appId: getAppId()
+    })
+    if(res.ret === 200){
+      return true
+    }else{
+      return false
+    }
+  }catch(e){
+    console.error(e)
+    return false
+  }
+}
+
+export const reconnection = async () => {
+  try{
+    const res = await Reconnection({
       appId: getAppId()
     })
     if(res.ret === 200){

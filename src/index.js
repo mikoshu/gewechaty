@@ -13,6 +13,9 @@ import {Room} from '@/class/ROOM.js'
 import { getLocalIPAddress } from "@/utils/index.js";
 import {logout} from '@/action/login.js'
 import { Friendship } from './class/FRIENDSHIP'
+import {getMyInfo, getMyQrcode, setMyInfo, setPrivacy, setAvatar, getDevices} from '@/action/personal.js'
+import {getAppId, getToken, getUuid} from '@/utils/auth.js'
+
 
 
 
@@ -45,9 +48,36 @@ export class GeweBot {
   on(eventName, callback) {
     bot.on(eventName, callback)
   }
-  logout(){
+  logout(){ // return boolean
     // 退出登录
     return logout()
+  }
+  async info(){ // 获取个人信息
+    return await getMyInfo()
+  }
+  async qrcode(){ // 获取二维码
+    return await getMyQrcode()
+  }
+  getAppId(){ // 获取appid
+    return getAppId()
+  }
+  getToken(){ // 获取token
+    return getToken()
+  }
+  getUuid(){ // 获取uuid
+    return getUuid()
+  }
+  setInfo(info){ // 设置个人信息
+    return setMyInfo(info)
+  }
+  setPrivacy(privacy){ // 设置隐私
+    return setPrivacy(privacy)
+  }
+  setAvatar(avatar){ // 设置头像
+    return setAvatar(avatar)
+  }
+  deviceList(){ // 获取设备列表
+    return getDevices()
   }
  
 }

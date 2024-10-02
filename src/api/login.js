@@ -43,6 +43,13 @@ export const Logout = (data, config = {}) => {
   return post('/login/logout', data, config)
 }
 
+export const Reconnection = (data, config = {}) => {
+  Object.assign(config, {
+    allCode: true
+  })
+  return post('/login/reconnection', data, config)
+}
+
 
 // export const MobileRegist = (data: MobileRegistParams, config: configParams = {}) => {
 //   data.passWord = setPassword(data.passWord)

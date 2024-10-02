@@ -4,7 +4,7 @@ import bodyParser from 'koa-bodyparser'
 import serve from 'koa-static'
 import { join } from 'path';
 import {setUrl} from '@/action/setUrl.js'
-import {login} from '@/action/login.js'
+import {login, reconnection} from '@/action/login.js'
 import {cacheAllContact} from '@/action/contact'
 import {setCached} from '@/action/common'
 import {CheckOnline} from '@/api/login'
@@ -44,8 +44,14 @@ export const startServe = (option) => {
       }
       
       if(body && body.TypeName === 'Offline'){
-        console.log('掉线咯！！！')
-        process.exit(1);
+        console.log('断线重连中...')
+        const s = await reconnection()
+        if(s){
+          console.log('断线重连成功')
+        }else{
+          console.log('断线重连失败,请重新登录！')
+          process.exit(1);
+        }
       }
       
       bot.emit('all', body)

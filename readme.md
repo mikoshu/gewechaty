@@ -92,6 +92,35 @@ bot
     })
     app.use(router.routes()).use(router.allowedMethods());
     
+    // 通过bot实例做相关操作
+    const info = await bot.info() // 获取当前登录微信的个人信息
+    console.log(info)
+
+    const qrcode = await bot.qrcode() // 获取当前登录微信的二维码 base64
+    console.log(qrcode)
+
+    await bot.setInfo({ // 当前登录微信的设置个人信息
+      "city": "Fuzhou", // 城市
+      "country": "CN", // 国家
+      "nickName": "test", //昵称
+      "province": "Fujian", //省份
+      "sex": 1, //性别 1:男 2:女
+      "signature": "......" // 个性签名
+    })
+
+    // 设置隐私
+    // 4:加我为朋友时需要验证  7:向我推荐通讯录朋友 8:添加我的方式 手机号 25:添加我的方式 微信号 38:添加我的方式 群聊 39:添加我的方式 我的二维码 40:添加我的方式 名片
+    await bot.setPrivacy({
+      option: 4, //
+      open: true //开关
+    })
+
+    // 设置头像
+    await bot.setAvatar('https://wx.qlogo.cn/mmhead/ver_1/REoLX7KfdibFAgDbtoeXGNjE6sGa8NCib8UaiazlekKjuLneCvicM4xQpuEbZWjjQooSicsKEbKdhqCOCpTHWtnBqdJicJ0I3CgZumwJ6SxR3ibuNs/0') // 设置头像
+
+    const list = await bot.deviceList() // 获取设备记录
+    console.log(list)
+
 
     // 通过手机号添加好友
     const contact = await bot.Friendship.search('150*******4')
@@ -265,6 +294,25 @@ const bot = new GeweBot({
 });
 // 如果docker 和GeweBot在同一台电脑上 可以直接使用 new GeweBot() 即可
 ```
+
+### GeweBot 类方法介绍
+
+| **方法名**                | **返回值类型** | **描述**                                                 |
+|---------------------------|----------------|--------------------------------------------------------|
+| `start()`                 | `Promise`      | 启动服务                                                 |
+| `on(eventName, callback)` | `void`         | 监听指定事件，`eventName` 为事件名，`callback` 为回调函数。 |
+| `logout()`                | `boolean`      | 退出登录                                                 |
+| `info()`                  | `Promise`      | 获取当前登录用户的个人信息。                              |
+| `qrcode()`                | `Promise`      | 获取当前用户的二维码。                                    |
+| `getAppId()`              | `string`       | 获取 `appId`。                                            |
+| `getToken()`              | `string`       | 获取 `token`。                                            |
+| `getUuid()`               | `string`       | 获取 `uuid`。                                             |
+| `setInfo(info)`           | `void`         | 设置用户的个人信息，`info` 为用户信息对象。                |
+| `setPrivacy(privacy)`     | `void`         | 设置隐私信息，`privacy` 为隐私设置对象。                   |
+| `setAvatar(avatar)`       | `void`         | 设置用户的头像，`avatar` 为头像图片的路径或 URL。          |
+| `deviceList()`            | `Promise`      | 获取用户设备列表。                                        |
+
+
 
 ### Message 类方法表
 
