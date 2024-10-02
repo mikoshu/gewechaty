@@ -8,7 +8,7 @@ export {WeVideo} from '@/class/WEVIDEO.js'
 export {Voice} from '@/class/VOICE.js'
 export {MiniApp} from '@/class/MINIAPP.js'
 export {AppMsg} from '@/class/APPMSG.js'
-export {Message} from '@/class/MESSAGE.js'
+import {Message} from '@/class/MESSAGE.js'
 import {Room} from '@/class/ROOM.js'
 import { getLocalIPAddress } from "@/utils/index.js";
 import {logout} from '@/action/login.js'
@@ -33,6 +33,7 @@ export class GeweBot {
     this.Contact = Contact;
     this.Room = Room
     this.Friendship = Friendship
+    this.Message = Message
     // 初始化事件监听器
   }
   async start(){

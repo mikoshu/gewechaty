@@ -45,9 +45,9 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    console.log(response.request.path)
-    console.log(response.data)
-    console.log(response.data.ret)
+    // console.log(response.request.path)
+    // console.log(response.data)
+    // console.log(response.data.ret)
     if(response.config.allCode){
       return response.data
     }
@@ -71,7 +71,7 @@ service.interceptors.response.use(
 // post 方法
 export const post = async (url, data, config = {}) => {
   try {
-    console.log('post-data', data)
+    // console.log('post-data', data)
     // 发送 POST 请求
     const response = await service({
       url,

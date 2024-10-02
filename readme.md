@@ -38,11 +38,11 @@ const bot = new GeweBot({
 const onMessage = async (msg) => {
   // 处理消息...
   // 回复文本消息
-  if (msg.type === Message.MessageType.Text) {
+  if (msg.type === bot.Message.Type.Text) { //类型详见 MessageType 表
     await msg.say("Hello, World!");
   }
   // 处理图片消息
-  if (msg.type === Message.MessageType.Image) {
+  if (msg.type === bot.Message.Type.Image) {
     await msg.say("收到图片");
   }
 };
@@ -149,6 +149,17 @@ bot
   });
 ```
 
+ES6 import 方式引用
+```javascript
+import pkg from 'gewechaty'
+const {GeweBot, Filebox, UrlLink, WeVideo, Voice, MiniApp, AppMsg, Message} = pkg
+const bot = new GeweBot({
+  debugger: true, // 是否开启调试模式 默认false
+  base_api: process.env.WEGE_BASE_API_URL,
+  file_api: process.env.WEGE_FILE_API_URL,
+});
+```
+
 注意 登录成功后 appId uuid 和 token 将保存在当前项目根目录的 ds.json 文件中，如果项目迁移但是 Gewechat 没有退出登录的话需要将文件迁移过新项目根目录下。
 
 ### 2. Message 消息对象
@@ -163,8 +174,7 @@ const {
   WeVideo,
   Voice,
   MiniApp,
-  AppMsg,
-  Message,
+  AppMsg
 } = require("gewechaty");
 
 
@@ -245,8 +255,9 @@ setTimeout(() => {
 
 ```javascript
 const bot = new GeweBot({
+  debugger: true, // 是否开启调试模式 默认false 开启调试将在控制台输出回调接口接收到的内容
   port: 3000, // 本地服务端口 默认3000
-  proxy: process.env.WEGE_LOCAL_PROXY, // 本地代理地址用于docker在云时无法访问本地时使用 可为空 如果有则使用代理 否则使用本机ip地址
+  proxy: process.env.WEGE_LOCAL_PROXY, // 本地代理地址，用于gewechat的docker在云时无法访问本地时使用 可为空 如果有则使用代理 否则使用本机ip地址
   static: "static", // 本机静态托管的目录 用于文件下载和上传 默认为static
   route: "/getWechatCallBack", // 本地回调接口route 默认为 `/getWechatCallBack` 最终地址为 `http://本机ip:port/getWechatCallBack`
   base_api: process.env.WEGE_BASE_API_URL, // 基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
@@ -276,8 +287,8 @@ const bot = new GeweBot({
 | `async toUrlLink()`                   | `Promise`              | 获取链接（尚未实现）。                         |
 | `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，通常用于图片消息。 |
 | `getXml2Json(xml)`                    | `Object`               | 将 XML 解析为 JSON 对象。                    |
-| `static async find(query)`            | `Promise<Contact>`     | 根据查询条件查找消息。                       |
-| `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | 查找所有符合查询条件的消息（暂不支持）。       |
+| `static async find(query)`            | `Promise<Contact>`     | (由于未保存聊天信息，暂不支持)               |
+| `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | （由于未保存聊天信息，暂不支持 ）              |
 
 
 ### ResponseMsg 类属性和方法表
@@ -374,13 +385,13 @@ const bot = new GeweBot({
 
 ### RoomInvitation 类方法表
 
-| **方法名**            | **返回值类型**       | **说明**                                               |
-|-----------------------|----------------------|--------------------------------------------------------|
-| `accept()`            | `Promise<void>`      | 接受房间邀请。                                          |
-| `inviter()`           | `Promise<Contact>`   | 获取邀请人，返回一个 `Contact` 对象。                   |
-| `topic()`             | `Promise<string>`    | 获取房间邀请的主题。                                    |
-| `date()`              | `Promise<Date>`      | 获取房间邀请的日期和时间。                              |
-| `age()`               | `Promise<number>`    | 获取邀请的年龄（以秒为单位）。                          |
+| **方法名**  | **返回值类型**     | **说明**                            |
+|-------------|--------------------|-----------------------------------|
+| `accept()`  | `Promise<void>`    | 接受房间邀请。                       |
+| `inviter()` | `Promise<Contact>` | 获取邀请人，返回一个 `Contact` 对象。 |
+| `topic()`   | `Promise<string>`  | 获取房间邀请的主题。                 |
+| `date()`    | `Promise<Date>`    | 获取房间邀请的日期和时间。           |
+| `age()`     | `Promise<number>`  | 获取邀请的年龄（以秒为单位）。         |
 
 
 免责声明【必读】

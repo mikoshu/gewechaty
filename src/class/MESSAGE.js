@@ -30,7 +30,7 @@ export class Message {
     }
   }
   // 静态属性
-  static MessageType = MessageType
+  static Type = MessageType
   // 实例方法
   isCompanyMsg() { // 是否是企业微信消息
     return this.fromId.includes('gh_') || this.fromId === 'weixin'
