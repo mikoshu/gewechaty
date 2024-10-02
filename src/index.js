@@ -30,7 +30,7 @@ export class GeweBot {
     this.base_api = this.base_api || `http://${ip}:2531/v2/api`;
     this.file_api = this.file_api || `http://${ip}:2532/download`;
     this.route = this.route || '/getWechatCallBack'
-    this.use_cache = this.use_cache || false
+    this.use_cache = true
     this.debug = this.debug || false
     // 初始化类
     this.Contact = Contact;

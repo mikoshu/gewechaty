@@ -141,8 +141,7 @@ export const startServe = (option) => {
             process.exit(1);
           }
         }
-        setCached(false)
-        if(option.use_cache){ // 使用缓存 且不存在数据库文件 创建本地数据库
+        // if(option.use_cache){ // 使用缓存 且不存在数据库文件 创建本地数据库
           setCached(true)
           if(!db.exists(getAppId()+'.db')){
             console.log('启用缓存 但不存在数据库文件 创建本地数据库')
@@ -156,7 +155,7 @@ export const startServe = (option) => {
             db.connect(getAppId()+'.db')
             console.log('启用缓存 且存在数据库文件 跳过缓存')
           }
-        }
+        // }
 
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){
