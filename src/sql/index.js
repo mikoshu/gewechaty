@@ -143,10 +143,10 @@ class myDB {
     return rows.length > 0 ? rows : null;
   }
 
-  // 方法4：插入新的联系人数据
+  // 方法4：插入新的联系人数据，如果存在则更新
   insertContact(contact) {
     const insertStmt = this.db.prepare(`
-      INSERT INTO contact (
+      INSERT OR REPLACE INTO contact (
         userName, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
         remarkQuanPin, signature, alias, snsBgImg, country, bigHeadImgUrl,
         smallHeadImgUrl, description, cardImgUrl, labelList, province, city, phoneNumList
@@ -176,13 +176,13 @@ class myDB {
       contact.phoneNumList || null
     );
 
-    console.log(`Inserted new contact: ${contact.userName}`);
+    console.log(`Inserted or updated contact: ${contact.userName}`);
   }
 
-  // 方法4：插入新的房间数据
+  // 方法4：插入新的房间数据，如果存在则更新
   insertRoom(room) {
     const insertStmt = this.db.prepare(`
-      INSERT INTO room (
+      INSERT OR REPLACE INTO room (
         chatroomId, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
         remarkQuanPin, chatRoomNotify, chatRoomOwner, smallHeadImgUrl, memberList
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -200,12 +200,11 @@ class myDB {
       room.chatRoomNotify || null,
       room.chatRoomOwner || null,
       room.smallHeadImgUrl || null,
-      room.memberList ? JSON.stringify(room.memberList) : null // 转换为 JSON 字符串
+      room.memberList ? JSON.stringify(room.memberList) : null
     );
 
-    console.log(`Inserted new room: ${room.chatroomId}`);
+    console.log(`Inserted or updated room: ${room.chatroomId}`);
   }
-
   // 方法5：更新联系人数据
   updateContact(userName, newData) {
     const existingContact = this.findOneByUserName(userName);

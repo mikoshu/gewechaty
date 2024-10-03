@@ -42,7 +42,6 @@ export const startServe = (option) => {
       if(option.debug){
         console.log(body);
       }
-      
       if(body && body.TypeName === 'Offline'){
         console.log('断线重连中...')
         const s = await reconnection()
@@ -53,7 +52,6 @@ export const startServe = (option) => {
           process.exit(1);
         }
       }
-      
       bot.emit('all', body)
       // 判断是否是微信消息
       if(body.Appid && body.TypeName === 'AddMsg'){ // 大部分消息类型都为 AddMsg
@@ -77,33 +75,28 @@ export const startServe = (option) => {
         const id = body.Data.UserName.string
         if(id.endsWith('@chatroom')){ // 群消息
           const oldInfo = db.findOneByChatroomId(id)
-          if(body.Data.SmallHeadImgUrl){ // 头像变动表示群成员变动
-            const newInfo = await getRoomLiveInfo(id)
-            const obj = compareMemberLists(oldInfo.memberList, newInfo.memberList)
-            if(obj.added.length > 0){
-              obj.added.map((item) => {
-                const member = new Contact(item)
-                roomEmitter.emit(`join:${id}`, new Room(newInfo), member, member.inviterUserName)
-              })
-              
-            }
-            if(obj.removed.length > 0){
-              obj.removed.map((item) => {
-                const member = new Contact(item)
-                roomEmitter.emit(`leave:${id}`, new Room(newInfo), member)
-              })
-            }
-            db.updateRoom(id, newInfo)
+          const newInfo = await getRoomLiveInfo(id)
+          // 比较成员列表
+          const obj = compareMemberLists(oldInfo.memberList, newInfo.memberList)
+          if(obj.added.length > 0){
+            obj.added.map((item) => {
+              const member = new Contact(item)
+              roomEmitter.emit(`join:${id}`, new Room(newInfo), member, member.inviterUserName)
+            })
           }
+          if(obj.removed.length > 0){
+            obj.removed.map((item) => {
+              const member = new Contact(item)
+              roomEmitter.emit(`leave:${id}`, new Room(newInfo), member)
+            })
+          }
+          
           if(body.Data.NickName.string !== oldInfo.nickName){ // 群名称变动
-            const newInfo = await getRoomLiveInfo(id)
             roomEmitter.emit(`topic:${id}`, new Room(newInfo), body.Data.NickName.string, oldInfo.nickName)
-            db.updateRoom(id, newInfo)
           }
+          db.updateRoom(id, newInfo)
         }
       }
-
-
 
       // "TypeName": "ModContacts", 好友消息， 群信息变更 
       // "TypeName": "DelContacts" 删除好友

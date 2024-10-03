@@ -160,11 +160,25 @@ bot
     // 监听群消息
     const room = await bot.Room.find({topic: '测试群4'})
     if(room){
-      room.on('join', (room, contact) => {
-        room.say(`有新人咯！欢迎欢迎, ${contact._name} 加入了群聊`, '@all')
+      room.on('join', async (room, contact) => {
+        const friend = await bot.Friendship.search(contact._wxid)
+        const urlLink = new UrlLink({
+          title: `${contact._name}加入了群聊`,
+          desc: `微信号：${contact._wxid}`,
+          thumbUrl: `${friend.bigHeadImgUrl}`, // 可以通过search方法获取用户头像
+          linkUrl: 'https://www.baidu.com'
+        })
+        room.say(urlLink)
       })
-      room.on('leave', (room, contact) => {
-        room.say(`有人退群咯, ${contact._name} 离开了群聊`, '@all')
+      room.on('leave', async (room, contact) => {
+        const friend = await bot.Friendship.search(contact._wxid)
+        const urlLink = new UrlLink({
+          title: `${contact._name}退出了群聊`,
+          desc: `微信号：${contact._wxid}`,
+          thumbUrl: `${friend.bigHeadImgUrl}`,
+          linkUrl: 'https://www.baidu.com'
+        })
+        room.say(urlLink)
       })
       room.on('topic', (room, newTopic, oldTopic) => {
         room.say(`群名由“${oldTopic}”换成了“${newTopic}”`, '@all')
