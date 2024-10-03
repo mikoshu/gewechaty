@@ -22,7 +22,7 @@ export const getCached = () => {
   return isCached
 }
 
-const appId = getAppId()
+// const appId = getAppId()
 
 // 检查是否是 Contact 类组成的数组
 function isArrayOfContact(arr) {
@@ -71,7 +71,7 @@ export const say = async (content, toWxid, ats) => {
         }
       }
       return SendText({
-        appId,
+        appId: getAppId(),
         content,
         toWxid,
         ats: atString
@@ -80,13 +80,13 @@ export const say = async (content, toWxid, ats) => {
       switch(content.type){
         case 'image':
           return SendImg({
-            appId,
+            appId: getAppId(),
             imgUrl: content.url,
             toWxid,
           })
         case 'file':
           return SendFile({
-            appId,
+            appId: getAppId(),
             fileUrl: content.url,
             toWxid,
             fileName: content.name
@@ -96,7 +96,7 @@ export const say = async (content, toWxid, ats) => {
       }
     }else if(content instanceof UrlLink){
       return SendUrl({
-        appId,
+        appId: getAppId(),
         toWxid,
         title: content.title,
         desc: content.desc,
@@ -105,14 +105,14 @@ export const say = async (content, toWxid, ats) => {
       })
     }else if(content instanceof Contact){
       return SendCard({
-        appId,
+        appId: getAppId(),
         toWxid,
         nickName: content._name,
         nameCardWxid: content._wxid,
       })
     }else if(content instanceof WeVideo){
       return SendVideo({
-        appId,
+        appId: getAppId(),
         toWxid,
         videoUrl: content.videoUrl,
         thumbUrl: content.thumbUrl,
@@ -120,14 +120,14 @@ export const say = async (content, toWxid, ats) => {
       })
     }else if(content instanceof Voice){
       return SendVoice({
-        appId,
+        appId: getAppId(),
         toWxid,
         voiceUrl: content.voiceUrl,
         voiceDuration: content.voiceDuration
       })
     }else if(content instanceof MiniApp){
       return SendMiniApp({
-        appId,
+        appId: getAppId(),
         toWxid,
         miniAppId: content.miniAppId,
         displayName: content.displayName,
@@ -138,7 +138,7 @@ export const say = async (content, toWxid, ats) => {
       })
     }else if(content instanceof AppMsg){
       return SendAppMsg({
-        appId,
+        appId: getAppId(),
         toWxid,
         appmsg: content.appmsg,
       })
@@ -152,7 +152,7 @@ export const say = async (content, toWxid, ats) => {
 // 撤回
 export const revork = async (content) => {
   return revorkMsg({
-    appId,
+    appId: getAppId(),
     toWxid: content.toWxid,
     msgId: content.msgId,
     newMsgId: content.newMsgId,
@@ -172,38 +172,38 @@ export const forward = async (content, contact, type) => {
   switch(type){
     case MessageType.Text:
       return SendText({
-        appId,
+        appId: getAppId(),
         content,
         toWxid,
         ats: ''
       })
     case MessageType.Image:
       return ForwardImage({
-        appId,
+        appId: getAppId(),
         toWxid,
         xml: content
       })
     case MessageType.File:
       return ForwardFile({
-        appId,
+        appId: getAppId(),
         toWxid,
         xml: content
       })
     case MessageType.Video:
       return ForwardVideo({
-        appId,
+        appId: getAppId(),
         toWxid,
         xml: content
       })
     case MessageType.Link:
       return ForwardUrl({
-        appId,
+        appId: getAppId(),
         toWxid,
         xml: content
       })
     case MessageType.MiniApp:
       return ForwardMiniApp({
-        appId,
+        appId: getAppId(),
         toWxid,
         xml: content
       })

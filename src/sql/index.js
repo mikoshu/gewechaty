@@ -145,6 +145,9 @@ class myDB {
 
   // 方法4：插入新的联系人数据，如果存在则更新
   insertContact(contact) {
+    if(contact.userName === null){
+      return
+    }
     const insertStmt = this.db.prepare(`
       INSERT OR REPLACE INTO contact (
         userName, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
@@ -176,11 +179,14 @@ class myDB {
       contact.phoneNumList || null
     );
 
-    console.log(`Inserted or updated contact: ${contact.userName}`);
+    console.log(`插入联系人: ${contact.userName}`);
   }
 
   // 方法4：插入新的房间数据，如果存在则更新
   insertRoom(room) {
+    if(room.chatroomId === null){
+      return
+    }
     const insertStmt = this.db.prepare(`
       INSERT OR REPLACE INTO room (
         chatroomId, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
@@ -203,7 +209,7 @@ class myDB {
       room.memberList ? JSON.stringify(room.memberList) : null
     );
 
-    console.log(`Inserted or updated room: ${room.chatroomId}`);
+    console.log(`插入群: ${room.chatroomId}`);
   }
   // 方法5：更新联系人数据
   updateContact(userName, newData) {

@@ -4,11 +4,10 @@ import {getAppId} from '@/utils/auth.js'
 import {Contact} from '@/class/CONTACT'
 import {db} from '@/sql/index.js'
 // import {getCached} from '@/action/common.js'
-const appId = getAppId()
 
 export const setRemark = async (wxid, remark) => {
   await setFriendRemark({
-    appId,
+    appId: getAppId(),
     wxid,
     remark
   })
@@ -19,7 +18,7 @@ export const getContact = async (wxid) => { // 使用id查询
   contact = db.findOneByWxId(wxid)
   if(!contact){ // 未缓存 则查询
     const info = await getInfo({
-      appId,
+      appId: getAppId(),
       wxids: [wxid]
     })
     if(!info || info.length === 0){
@@ -91,15 +90,17 @@ export const findAll = async (query) => {
 // 获取所有好友缓存所有数据到本地db
 export const cacheAllContact = async () => {
   try {
+    console.log('获取用户所有好友以及群信息中...')
     const res = await findAllContact({
-      appId
+      appId: getAppId()
     });
-
+    console.log('获取用户所有好友以及群信息完成，开始缓存内容...')
     if (res && res.friends) {
-      const wxids = res.friends;
+      let wxids = res.friends;
+      wxids = wxids.filter(item => item && !item.startsWith('gh_') && item !== null && item !== 'null');
       await processBatch(wxids, 20, async (batch) => {
         const info = await getInfo({
-          appId,
+          appId: getAppId(),
           wxids: batch
         });
         if (info && info.length > 0) {
@@ -108,21 +109,22 @@ export const cacheAllContact = async () => {
           });
         }
       });
+      console.log(`缓存联系人完成`)
     }
 
     if (res && res.chatrooms) {
-      const wxids = res.chatrooms;
-      await processBatch(wxids, 20, async (batch) => {
+      let wxids = res.chatrooms;
+      wxids = wxids.filter(item => item && item !== null && item !== 'null');
+      await processBatch(wxids, 1, async (batch) => {
         const info = await GetRoomInfo({
-          appId,
-          wxids: batch
+          appId: getAppId(),
+          chatroomId: batch[0]
         });
-        if (info && info.length > 0) {
-          info.forEach(item => {
-            db.insertRoom(item);
-          });
+        if (info) {
+          db.insertRoom(info);
         }
       });
+      console.log(`缓存群信息完成，（只缓存有保存的群，其他群信息将在首次接收到时同步缓存）`)
     }
   } catch (e) {
     console.error(e);
@@ -141,7 +143,7 @@ const processBatch = async (array, batchSize, callback) => {
 
 export const acceptContact = async (scene, v3, v4) => {
   const res = await AddContact({
-    appId,
+    appId: getAppId(),
     scene,
     option: 3, // 操作类型，2添加好友 3同意好友 4拒绝好友
     v3,
@@ -153,7 +155,7 @@ export const acceptContact = async (scene, v3, v4) => {
 
 export const addContact = async (v3, v4, content) => {
   const res = await AddContact({
-    appId,
+    appId: getAppId(),
     scene: 15,
     option: 2, // 操作类型，2添加好友 3同意好友 4拒绝好友
     v3,
@@ -165,7 +167,7 @@ export const addContact = async (v3, v4, content) => {
 
 export const rejectContact = async (scene, v3, v4, content) => {
   const res = await AddContact({
-    appId,
+    appId: getAppId(),
     scene,
     option: 4, // 操作类型，2添加好友 3同意好友 4拒绝好友
     v3,
@@ -178,7 +180,7 @@ export const rejectContact = async (scene, v3, v4, content) => {
 export const searchContact = async (mobile) => {
   // 应为添加好友时使用
   const res = await findContact({
-    appId,
+    appId: getAppId(),
     contactsInfo: mobile
   })
   if(res){

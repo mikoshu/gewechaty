@@ -1,43 +1,43 @@
 import {GetMyInfo, GetMyQrcode, SetInfo, SetPrivacy, SetAvatar, GetDevices} from '@/api/personal.js'
 import {getAppId} from '@/utils/auth.js'
 
-const appId = getAppId()
+// const appId = getAppId()
 
 export const getMyInfo = async () => {
   return GetMyInfo({
-    appId
+    appId: getAppId()
   })
 }
 
 export const getMyQrcode = async () => {
   return GetMyQrcode({
-    appId
+    appId: getAppId()
   })
 }
 
 export const setMyInfo = async (data) => {
   return SetInfo({
-    appId,
+    appId: getAppId(),
    ...data
   })
 }
 
 export const setPrivacy = async (data) => {
   return SetPrivacy({
-    appId,
+    appId: getAppId(),
     ...data
   })
 }
 
 export const setAvatar = async (url) => {
   return SetAvatar({
-    appId,
+    appId: getAppId(),
     headImgUrl: url
   })
 }
 
 export const getDevices = async () => {
   return GetDevices({
-    appId
+    appId: getAppId()
   })
 }

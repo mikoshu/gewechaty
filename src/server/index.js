@@ -116,8 +116,7 @@ export const startServe = (option) => {
     ctx.body = "SUCCESS";
   });
   app.use(bodyParser());
-  app.use(router.routes())
-  app.use(router.allowedMethods())
+  
   
   return new Promise((resolve, reject) => {
     app.listen(option.port, async (err) => {
@@ -153,15 +152,17 @@ export const startServe = (option) => {
           db.createContactTable()
           db.createRoomTable()
           // 缓存所有联系人 并保存到本地数据库
-          console.log('本地数据初始化...')
-          await delay(2000) // 防止异步
+          console.log('本地数据初始化，可能需要耗费点时间，耐心等待...')
+          await delay(1000) // 防止异步
           await cacheAllContact()
           console.log('数据初始化完毕')
         }else{
           db.connect(getAppId()+'.db')
           console.log('存在缓存数据，启用缓存')
         }
-
+        // 此时再启用回调地址 防止插入数据时回调
+        app.use(router.routes())
+        app.use(router.allowedMethods())
 
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){

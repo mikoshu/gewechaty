@@ -3,7 +3,7 @@ import { GetToken, GetQrcode, CheckLogin, Logout, Reconnection } from "@/api/log
 import { setToken, setAppId, getAppId, setUuid, getUuid } from '@/utils/auth.js';
 
 let loginStatus = 0
-const appId = getAppId()
+// const appId = getAppId()
 // 获取token
 export const getToken = async() => {
   return new Promise((resolve, reject) => {
@@ -25,13 +25,13 @@ const showQrcode = async() => {
   await getToken()
   try{
     const res = await GetQrcode({
-      appId
+      appId: getAppId()
     })
     if(res.ret !== 200){
       console.log('获取二维码失败')
       return false
     }
-    console.log("输入的appid：", appId)
+    console.log("输入的appid：", getAppId())
     console.log('返回的appid:', res.data.appId)
     if(res.data.appId){
       setAppId(res.data.appId)

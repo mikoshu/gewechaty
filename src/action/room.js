@@ -5,14 +5,14 @@ import {Room} from '@/class/ROOM.js'
 import {getAppId} from '@/utils/auth.js'
 import {db} from '@/sql/index.js'
 // import {getCached} from '@/action/common.js'
-const appId = getAppId()
+// const appId = getAppId()
 
 export const getRoomInfo = async (roomId) => {
   let room = null
   room = db.findOneByChatroomId(roomId)
   if(!room){ // 缓存中没有数据则从接口获取
     room = await GetRoomInfo({
-      appId,
+      appId: getAppId(),
       chatroomId: roomId,
     })
     if(room){
@@ -26,7 +26,7 @@ export const getRoomInfo = async (roomId) => {
 
 export const getRoomLiveInfo = async (roomId) => {
   let room = await GetRoomInfo({
-      appId,
+      appId: getAppId(),
       chatroomId: roomId,
     })
   return room
@@ -36,7 +36,7 @@ export const updateRoomInfo = async (roomId) => {
   let room = null
   room = db.findOneByChatroomId(roomId)
   const roomInfo = await GetRoomInfo({
-    appId,
+    appId: getAppId(),
     chatroomId: roomId,
   })
 
@@ -52,7 +52,7 @@ export const updateRoomInfo = async (roomId) => {
 
 export const inviteMember = async (wxids, chatroomId, reason = '') => {
   return InviteMember({
-    appId,
+    appId: getAppId(),
     wxids,
     chatroomId,
     reason
@@ -61,7 +61,7 @@ export const inviteMember = async (wxids, chatroomId, reason = '') => {
 
 export const delMember = async (wxids, chatroomId) => {
   return DelMember({
-    appId,
+    appId: getAppId(),
     wxids,
     chatroomId
   })
@@ -105,7 +105,7 @@ export const findAll = async (query) => {
 
 export const changeRoomName = async (chatroomId, chatroomName) => {
   return ChangeRoomName({
-    appId,
+    appId: getAppId(),
     chatroomId,
     chatroomName
   })
@@ -113,14 +113,14 @@ export const changeRoomName = async (chatroomId, chatroomName) => {
 
 export const getAnnouncement = async (chatroomId) => {
   return GetAnnouncement({
-    appId,
+    appId: getAppId(),
     chatroomId
   })
 }
 
 export const setAnnouncement = async (chatroomId, content) => {
   return SetAnnouncement({
-    appId,
+    appId: getAppId(),
     chatroomId,
     content
   })
@@ -128,7 +128,7 @@ export const setAnnouncement = async (chatroomId, content) => {
 
 export const getRoomMemberInfo = async (chatroomId, wxid) => {
   return GetRoomMemberInfo({
-    appId,
+    appId: getAppId(),
     chatroomId,
     memberWxids: [wxid]
   })
@@ -136,14 +136,14 @@ export const getRoomMemberInfo = async (chatroomId, wxid) => {
 
 export const getRoomMemberList = async (chatroomId) => {
   return GetRoomMemberList({
-    appId,
+    appId: getAppId(),
     chatroomId
   })
 }
 
 export const createRoom = async (contactList, chatroomName) => {
   const {chatroomId} = await CreateRoom({
-    appId,
+    appId: getAppId(),
     wxids: contactList.map(item => item._wxid),
   })
   await changeRoomName(chatroomId, chatroomName)
@@ -152,21 +152,21 @@ export const createRoom = async (contactList, chatroomName) => {
 
 export const quitRoom = async (chatroomId) => {
   return QuitRoom({
-    appId,
+    appId: getAppId(),
     chatroomId
   })
 }
 
 export const getQrcode = async (chatroomId) => {
   return GetQrcode({
-    appId,
+    appId: getAppId(),
     chatroomId
   })
 }
 
 export const joinRoom = async (url) => {
   return JoinRoom({
-    appId,
+    appId: getAppId(),
     url
   })
 }

@@ -17,7 +17,7 @@ const service = axios.create({
       return data;
     }
   }],
-  timeout: 5000 // 请求超时时间
+  timeout: 60000 // 请求超时时间
 })
 
 

@@ -7,7 +7,18 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 本项目基于 Gewechat，请先确认 Gewechat 已经能够正常启动，否则无法使用本插件。
 
 - 将在项目运行根目录创建一个ds.json 用于存储 appid token 和uuid 同时创建 ${appid}.db 用于缓存联系人和群信息，以确保可以使用联系人昵称和群名称查询相关信息，无需直接使用wxid查询， 如果确实需要使用wxid查询可以直接传入wxid，如`bot.Contact.find('wxid_xxxx')`。
+- 注意如果本地没有ds.json文件将会以空的appid向gewechat发起新的登录请求，如果你已经登录了gewechat不想退出登录可以自行构建一个ds.json文件。结构如下：(如未保存这些信息，建议直接手机退出登录后直接运行项目，将会唤起重新登录流程)
+
+```json
+{
+    "token": "f4e4dd8d4ff148*************",
+    "appid": "wx_*****************",
+    "uuid": "************" 
+}
+```
+
 - 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用[volta](https://volta.sh/)来管理node版本。
+- 首次使用时需要缓存所有联系人和保存的群数据，如果联系人较多，可能会比较耗时，之后将会点过维护db缓存数据无需再次处理。
 
 
 ## 二、安装

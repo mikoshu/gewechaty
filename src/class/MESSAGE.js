@@ -33,7 +33,8 @@ export class Message {
   static Type = MessageType
   // 实例方法
   isCompanyMsg() { // 是否是企业微信消息
-    return this.fromId.includes('gh_') || this.fromId === 'weixin' || this.fromId === 'newsapp'
+    const companyList = ['weixin', 'newsapp', 'tmessage', 'qqmail','mphelper', 'qqsafe', 'weibo', 'qmessage', 'floatbottle', 'medianote']
+    return this.fromId.includes('gh_') || companyList.includes(this.fromId)
   }
   from() { // 发送者
     if(this.isRoom){
