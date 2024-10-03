@@ -26,6 +26,10 @@ const app = new koa()
 const router = new koaRouter()
 // 使用 bodyParser 解析 POST 请求的 body
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export const startServe = (option) => {
   // 启动服务
   let callBackUrl = `http://${ip}:${option.port}${option.route}`
@@ -123,9 +127,16 @@ export const startServe = (option) => {
       }
 
       try{
-        const isOnline = await CheckOnline({
-          appId: getAppId()
-        })
+        let isOnline = ''
+        if(getAppId()){ // 有appid时
+          isOnline = await CheckOnline({
+            appId: getAppId()
+          })
+        }else{
+          console.log('未设置appid，启动登录')
+          isOnline = {ret: 200, data: false}
+        }
+        
         if(isOnline.ret === 200 && isOnline.data === false){
           console.log('未登录')
           const loginRes = await login()
@@ -134,21 +145,23 @@ export const startServe = (option) => {
             process.exit(1);
           }
         }
-        // if(option.use_cache){ // 使用缓存 且不存在数据库文件 创建本地数据库
-          setCached(true)
-          if(!db.exists(getAppId()+'.db')){
-            console.log('启用缓存 但不存在数据库文件 创建本地数据库')
-            db.connect(getAppId()+'.db')
-            // 创建表
-            db.createContactTable()
-            db.createRoomTable()
-            // 缓存所有联系人 并保存到本地数据库
-            await cacheAllContact()
-          }else{
-            db.connect(getAppId()+'.db')
-            console.log('启用缓存 且存在数据库文件 跳过缓存')
-          }
-        // }
+        setCached(true)
+        if(!db.exists(getAppId()+'.db')){
+          console.log('创建本地数据库，启用缓存')
+          db.connect(getAppId()+'.db')
+          // 创建表
+          db.createContactTable()
+          db.createRoomTable()
+          // 缓存所有联系人 并保存到本地数据库
+          console.log('本地数据初始化...')
+          await delay(2000) // 防止异步
+          await cacheAllContact()
+          console.log('数据初始化完毕')
+        }else{
+          db.connect(getAppId()+'.db')
+          console.log('存在缓存数据，启用缓存')
+        }
+
 
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){

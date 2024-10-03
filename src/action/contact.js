@@ -90,41 +90,54 @@ export const findAll = async (query) => {
 
 // 获取所有好友缓存所有数据到本地db
 export const cacheAllContact = async () => {
-  try{
+  try {
     const res = await findAllContact({
       appId
-    })
-    if(res && res.friends){ // 返回一个wxid数组
-      const wxids = res.friends
-      const info = await getInfo({
-        appId,
-        wxids
-      })
-      if(info && info.length > 0){
-        info.forEach(item => {
-          db.insertContact(item)
-        })
-      }
+    });
+
+    if (res && res.friends) {
+      const wxids = res.friends;
+      await processBatch(wxids, 20, async (batch) => {
+        const info = await getInfo({
+          appId,
+          wxids: batch
+        });
+        if (info && info.length > 0) {
+          info.forEach(item => {
+            db.insertContact(item);
+          });
+        }
+      });
     }
-    if(res && res.chatrooms){ // 返回一个wxid数组
-      const wxids = res.chatrooms
-      wxids.forEach(async item => {
+
+    if (res && res.chatrooms) {
+      const wxids = res.chatrooms;
+      await processBatch(wxids, 20, async (batch) => {
         const info = await GetRoomInfo({
           appId,
-          wxids
-        })
-        if(info){
-          db.insertRoom(item)
+          wxids: batch
+        });
+        if (info && info.length > 0) {
+          info.forEach(item => {
+            db.insertRoom(item);
+          });
         }
-      })
-      
-      
+      });
     }
-  }catch(e){
-    console.error(e)
-    return null
+  } catch (e) {
+    console.error(e);
+    return null;
   }
-}
+};
+
+// 辅助函数：分批处理数组
+const processBatch = async (array, batchSize, callback) => {
+  for (let i = 0; i < array.length; i += batchSize) {
+    const batch = array.slice(i, i + batchSize); // 分割数组
+    await callback(batch);  // 每一批次执行传入的回调函数
+  }
+};
+
 
 export const acceptContact = async (scene, v3, v4) => {
   const res = await AddContact({

@@ -48,7 +48,6 @@ export const timeWithin = (timestamp, time = 2) => {
  * @returns
  */
 export const  getFileNameFromUrl = (link) => {
-    console.log('link', link)
     return link.split('/').pop();
 }
 

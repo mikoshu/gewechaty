@@ -1,6 +1,6 @@
 import DS from 'ds';
 
-const ds = new DS()
+let ds = new DS()
 
 export const getToken = () => {
   return ds.token || ''

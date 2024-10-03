@@ -33,7 +33,7 @@ export class Message {
   static Type = MessageType
   // 实例方法
   isCompanyMsg() { // 是否是企业微信消息
-    return this.fromId.includes('gh_') || this.fromId === 'weixin'
+    return this.fromId.includes('gh_') || this.fromId === 'weixin' || this.fromId === 'newsapp'
   }
   from() { // 发送者
     if(this.isRoom){
@@ -176,7 +176,7 @@ export class Message {
         case 49:
           parser = new XMLParser();
           jObj = parser.parse(xml);
-          console.log(jObj)
+          // console.log(jObj)
           if(jObj.msg.appmsg.type === 5){
             if(jObj.msg.appmsg.title === '邀请你加入群聊'){
               return MessageType.RoomInvitation

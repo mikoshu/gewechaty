@@ -4,7 +4,6 @@ import { setToken, setAppId, getAppId, setUuid, getUuid } from '@/utils/auth.js'
 
 let loginStatus = 0
 const appId = getAppId()
-console.log('appid:',appId)
 // 获取token
 export const getToken = async() => {
   return new Promise((resolve, reject) => {
