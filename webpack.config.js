@@ -1,5 +1,5 @@
 const path = require('path');
-const glob = require('glob');  // 用于获取所有的 JS 文件
+// const glob = require('glob');  // 用于获取所有的 JS 文件
 module.exports = {
   // entry: glob.sync('./src/**/*.js').reduce((entries, file) => {
   //   // 删除 src/ 部分，只保留 src 下的文件及其相对路径

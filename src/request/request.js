@@ -83,6 +83,7 @@ export const post = async (url, data, config = {}) => {
   } catch (error) {
     // 在这里处理错误
     console.error(`请求${url}出错：`, error);
+    console.log('请求数据为：', data)
     // 自定义处理逻辑，比如返回错误信息或处理默认返回值
     return {
       success: false,

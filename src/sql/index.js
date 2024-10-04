@@ -179,7 +179,7 @@ class myDB {
       contact.phoneNumList || null
     );
 
-    console.log(`插入联系人: ${contact.userName}`);
+    console.log(`缓存联系人: ${contact.userName}`);
   }
 
   // 方法4：插入新的房间数据，如果存在则更新
@@ -209,7 +209,7 @@ class myDB {
       room.memberList ? JSON.stringify(room.memberList) : null
     );
 
-    console.log(`插入群: ${room.chatroomId}`);
+    console.log(`缓存群: ${room.chatroomId}`);
   }
   // 方法5：更新联系人数据
   updateContact(userName, newData) {
