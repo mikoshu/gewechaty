@@ -41,7 +41,6 @@ export const updateRoomInfo = async (roomId) => {
   })
 
   if(room){ // 存在则更新否则插入
-    console.log('更新房间信息', roomInfo)
     db.updateRoom(roomId, roomInfo)
   }else{
     db.insertRoom(roomInfo)

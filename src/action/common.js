@@ -11,6 +11,7 @@ import {Voice} from '@/class/VOICE.js'
 import {MiniApp} from '@/class/MINIAPP.js'
 import {AppMsg} from '@/class/APPMSG.js'
 import {MessageType} from '@/type/MessageType'
+import {db} from '@/sql/index.js'
 
 export let isCached = false
 
@@ -48,7 +49,8 @@ export const say = async (content, toWxid, ats) => {
   try{
     if(typeof content === 'string'){ // 处理文本消息
       let atString = ''
-      if(ats){ // 处理ats 支持单个和多个
+      if(ats && toWxid.endsWith('@chatroom')){ // 处理ats 支持单个和多个
+        const room = db.findOneByChatroomId(toWxid)
         let flag = false
         if(ats === '@all'){
           atString = 'notify@all'
@@ -57,12 +59,27 @@ export const say = async (content, toWxid, ats) => {
         }
         if(ats instanceof Contact){
           atString = ats._wxid
-          content = `@${ats.name()} ` + content
+          let name = ''
+          room.memberList.find(item => {
+            if(item.wxid === ats._wxid){
+              name = item.displayName
+            }
+          })
+          name = name || ats.name()
+          content = `@${name} ` + content
           flag = true
         }
-        if(isArrayOfContact(ats)){
+        if(isArrayOfContact(ats)){ // 多个通知用户
           atString = ats.map(item => item._wxid).join(',')
-          const start = ats.map(item => '@'+item.name()).join(' ')
+          const start = ats.map(item => {
+            let name = ''
+            room.memberList.find(member => {
+              if(member.wxid === item._wxid){
+                name = member.displayName
+              }
+            })
+            return `@${name || item.name()}`
+          }).join(' ')
           content = start + ' ' + content
           flag = true
         }

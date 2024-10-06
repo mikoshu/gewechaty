@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
-
+import {getRoomMemberList} from '@/action/room.js'
 
 class myDB {
   constructor() {
@@ -143,6 +143,24 @@ class myDB {
     return rows.length > 0 ? rows : null;
   }
 
+  // 新增方法：更新room表中的memberList字段
+  updateRoomMemberList(chatroomId, memberList) {
+    const existingRoom = this.findOneByChatroomId(chatroomId);
+    if (!existingRoom) {
+      console.log(`Room ${chatroomId} does not exist.`);
+      return;
+    }
+
+    const updateStmt = this.db.prepare(`
+      UPDATE room SET memberList = ? WHERE chatroomId = ?
+    `);
+
+    // 将 memberList 转换为 JSON 字符串并更新
+    updateStmt.run(JSON.stringify(memberList), chatroomId);
+
+    console.log(`Updated memberList for room: ${chatroomId}`);
+  }
+
   // 方法4：插入新的联系人数据，如果存在则更新
   insertContact(contact) {
     if(contact.userName === null){
@@ -254,7 +272,7 @@ class myDB {
   }
 
   // 方法5：更新房间数据
-  updateRoom(chatroomId, newData) {
+  async updateRoom(chatroomId, newData) {
     const existingRoom = this.findOneByChatroomId(chatroomId);
     if (!existingRoom) {
       console.log(`Room ${chatroomId} does not exist.`);
@@ -267,7 +285,11 @@ class myDB {
         remarkQuanPin = ?, chatRoomNotify = ?, chatRoomOwner = ?, smallHeadImgUrl = ?, memberList = ?
       WHERE chatroomId = ?
     `);
-
+    
+    const res = await getRoomMemberList(chatroomId) // 更新memberlist
+    if(res && res.memberList){
+      newData.memberList = res.memberList
+    }
     updateStmt.run(
       newData.nickName || existingRoom.nickName,
       newData.pyInitial || existingRoom.pyInitial,

@@ -62,7 +62,6 @@ export const startServe = (option) => {
         // 消息hanlder
         const msg = new Message(body)
         // 发送消息
-        
         const type = msg.type()
         if(type === MessageType.RoomInvitation){ // 群邀请
           let obj = msg.getXml2Json(msg.text())
