@@ -43,7 +43,7 @@ const {
 } = require("gewechaty");
 
 const bot = new GeweBot({
-  debugger: true, // 是否开启调试模式 默认false
+  debug: true, // 是否开启调试模式 默认false
   base_api: process.env.WEGE_BASE_API_URL, // Gewechat启动后的基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
   file_api: process.env.WEGE_FILE_API_URL, // Gewechat启动后的文件api地址base_api 默认为 `http://本机ip:2532/download`,
 });
@@ -212,7 +212,7 @@ ES6 import 方式引用
 import pkg from 'gewechaty'
 const {GeweBot, Filebox, UrlLink, WeVideo, Voice, MiniApp, AppMsg, Message} = pkg
 const bot = new GeweBot({
-  debugger: true, // 是否开启调试模式 默认false
+  debug: true, // 是否开启调试模式 默认false
   base_api: process.env.WEGE_BASE_API_URL,
   file_api: process.env.WEGE_FILE_API_URL,
 });
@@ -322,7 +322,7 @@ bot.start()
 
 ```javascript
 const bot = new GeweBot({
-  debugger: true, // 是否开启调试模式 默认false 开启调试将在控制台输出回调接口接收到的内容
+  debug: true, // 是否开启调试模式 默认false 开启调试将在控制台输出回调接口接收到的内容
   port: 3000, // 本地服务端口 默认3000
   proxy: process.env.WEGE_LOCAL_PROXY, // 本地代理地址，用于gewechat的docker在云时无法访问本地时使用 可为空 如果有则使用代理 否则使用本机ip地址例如 （http://proxy.domain.com:3000）注意需要跟上端口号
   static: "static", // 本机静态托管的目录 用于文件下载和上传 默认为static
