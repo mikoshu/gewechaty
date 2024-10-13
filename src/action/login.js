@@ -1,6 +1,7 @@
 import qrTerminal from 'qrcode-terminal'
 import { GetToken, GetQrcode, CheckLogin, Logout, Reconnection } from "@/api/login.js";
 import { setToken, setAppId, getAppId, setUuid, getUuid } from '@/utils/auth.js';
+import { botEmitter } from '@/bot.js'
 
 let loginStatus = 0
 // const appId = getAppId()
@@ -39,7 +40,11 @@ const showQrcode = async() => {
     }
     qrTerminal.generate(res.data.qrData, { small: true })
     const qrcodeImageUrl = ['https://api.qrserver.com/v1/create-qr-code/?data=', encodeURIComponent(res.data.qrData)].join('')
-    console.log('onScan:', qrcodeImageUrl)
+    // console.log('onScan:', qrcodeImageUrl)
+    botEmitter.emit('scan', {
+      content: res.data.qrData,
+      url: qrcodeImageUrl
+    })
     return true
   }catch(e){
     console.error(e)

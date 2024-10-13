@@ -86,6 +86,11 @@ bot.on('all', msg => { // 如需额外的处理逻辑可以监听 all 事件 该
   console.log('received all event.')
 })
 
+// 扫码事件 如果需要获取二维码内容展示到其他地方的时候可以使用，一般不需要，已经在命令行中展示了需要扫码的二维码
+bot.on('scan', qrcode => { // 需要用户扫码时返回对象qrcode.content为二维码内容 qrcode.url为转化好的图片地址
+  console.log(qrcode.content)
+})
+
 bot
   .start()
   .then(async ({app, router}) => {
