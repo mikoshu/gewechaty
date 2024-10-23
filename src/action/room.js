@@ -69,11 +69,13 @@ export const delMember = async (wxids, chatroomId) => {
 
 export const find = async (query) => {
   let room = null
-  if(typeof query ==='string'){
+  if(typeof query ==='string' ){
     room = db.findOneByChatroomId(query)
   }else if(typeof query ==='object'){
     if(query.topic){
       room = db.findOneByChatroomName(query.topic)
+    }else if(query.id){
+      room = db.findOneByChatroomId(query.id)
     }else{
       console.log('不支持的查询内容')
       return null

@@ -1,5 +1,10 @@
 import {downloadFile} from '@/request/fileRequest.js'
-import {getFileNameFromUrl} from '@/utils/index.js'
+import {getFileNameFromUrl, joinURL} from '@/utils/index.js'
+import { join, basename } from 'path';
+import fs from 'fs'
+import {staticUrl, proxyUrl} from '@/server/index'
+const tempname = '_gewetemp'
+
 
 export class Filebox {
   constructor() {
@@ -18,6 +23,36 @@ export class Filebox {
     instance.url = url
     instance.name = getFileNameFromUrl(url)
     return instance
+  }
+  static fromFile(filepath, time = 1000 * 60 * 5){
+    try {
+      const tempDir = join(staticUrl, tempname)
+      // 检查 temp 目录是否存在，如果不存在则创建
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir);
+      }
+      // 获取文件名
+      const fileName = basename(filepath);
+      // 构建目标文件的路径
+      const destPath = join(tempDir, fileName);
+      // 复制文件到 temp 目录
+      fs.copyFileSync(filepath, destPath);
+      const url = joinURL(proxyUrl, tempname, fileName)
+      const t = setTimeout(() => {
+        // 删除文件
+        fs.unlink(destPath, (err) => {
+          if (err) {
+            console.error('删除文件时出错:', err);
+          } else {
+            console.log(`文件 ${destPath} 已删除`);
+          }
+        });
+        clearTimeout(t)
+      }, time);
+      return Filebox.fromUrl(url)
+    } catch (err) {
+      console.error('复制文件时出错:', err);
+    }
   }
   static toDownload(url, type, name){
     const instance = new Filebox()

@@ -39,7 +39,10 @@ export const find = async (content) => { // 使用name alias wxid查询
     contactsInfo = content
 
   }else if(typeof content ==='object'){
-    contactsInfo = content.name || content.alias
+    contactsInfo = content.name || content.alias || content.id
+  }else{
+    console.log('不支持的查询内容')
+    return null
   }
   if(!contactsInfo){
     console.log('查询内容不能为空')
@@ -55,14 +58,14 @@ export const find = async (content) => { // 使用name alias wxid查询
       contact = db.findOneByName(content.name)
     }else if(content.alias){
       contact = db.findOneByAlias(content.alias)
+    }else if(content.id){
+      contact = db.findOneByWxId(content.id)
     }else{
       console.log('不支持的查询内容')
       return null
     }
   }
-  
   return contact? new Contact(contact) : null
-
 }
 
 export const findAll = async (query) => {

@@ -1,9 +1,9 @@
 import os from 'os';
 import { XMLParser} from "fast-xml-parser";
+
 export const getLocalIPAddress = () => {
   const interfaces = os.networkInterfaces();
   let localIPAddress = '';
-
   for (let interfaceName in interfaces) {
       const addresses = interfaces[interfaceName];
       for (let i = 0; i < addresses.length; i++) {
@@ -19,7 +19,6 @@ export const getLocalIPAddress = () => {
           }
       }
   }
-
   return localIPAddress;
 }
 /**

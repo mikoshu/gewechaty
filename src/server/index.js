@@ -20,7 +20,8 @@ import {RoomInvitation} from '@/class/ROOMINVITATION.js'
 import {getRoomLiveInfo} from '@/action/room.js'
 import { Friendship } from '@/class/FRIENDSHIP';
 export const bot = botEmitter
-
+export let staticUrl = 'static'
+export let proxyUrl = ''
 const ip = getLocalIPAddress()
 const app = new koa()
 const router = new koaRouter()
@@ -36,9 +37,10 @@ export const startServe = (option) => {
   if(option.proxy){
     callBackUrl = `${option.proxy}${option.route}`
   }
+  proxyUrl = option.proxy
   // 设置文件保存目录
   app.use(serve(join(process.cwd(), option.static)))
-
+  staticUrl = join(process.cwd(), option.static)
   // 定义一个接口，能够同时处理 GET 和 POST 请求
   router.post(option.route, async (ctx) => {
     try{

@@ -19,7 +19,7 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 ```
 
 - 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用[volta](https://volta.sh/)来管理node版本。
-- 首次使用时需要缓存所有联系人和保存的群数据，如果联系人较多，可能会比较耗时，之后将会点过维护db缓存数据无需再次处理。
+- 首次使用时需要缓存所有联系人和保存的群数据，如果联系人较多，可能会比较耗时，之后将会自动维护db缓存数据无需再次处理。
 
 
 ## 二、安装
@@ -148,7 +148,7 @@ bot
     // 查找联系人方法
     const friend = await bot.Contact.find({name: 'test'}) // 使用昵称查询
     const friend2 = await bot.Contact.find({alias: 'test1'}) // 使用备注查询 
-    const friend3 = await bot.Contact.find('wxid_xxxxx') // 直接使用wxid查询
+    const friend3 = await bot.Contact.find({id: 'wxid_xxxxx'}) // 直接使用wxid查询
     friend && friend.say('hello') // 给查询到的联系人发送消息
 
     // 创建群
@@ -251,6 +251,8 @@ const onMessage = async (msg) => {
   const url = `${bot.proxy}/test/test.xlsx`;
   //此处需要使用https:// 或者http:// 开头的地址 可将地址放在本地静态目录下 这里将调用 `${process.cwd()}/${static}/test/test.xlsx` 这个文件
   msg.say(Filebox.fromUrl(url));
+  // fromFile 需要传一个文件的绝对路径 只支持图片和文件，其他类型往下看文档
+  msg.say(Filebox.fromFile(path-to-file));
 
   // 发送链接
   const urlLink = new UrlLink({
@@ -319,7 +321,7 @@ bot.on("message", (msg) => {
 bot.start()
 ```
 
-注意：此处所有涉及到发送的文件 url 的都必须为`http://` 开头的地址，可将文件放在静态托管目录下，即可使用`http://ip:port/xxx/xxx.png`的方式传输。静态托管目录如为 `/static`,文件地址为`/static/images/test.jpg` 则在线访问地址为`http://localhost:port/images/test.jpg` 此时`bot.proxy`为`http://ip:port`或自己设置的代理地址
+注意：此处所有发送的文件fromUrl时url必须为`http(s)://` 开头的地址，可将文件放在静态托管目录下，即可使用`http://ip:port/xxx/xxx.png`的方式传输。静态托管目录如为 `/static`,文件地址为`/static/images/test.jpg` 则在线访问地址为`http://localhost:port/images/test.jpg` 此时`bot.proxy`为`http://ip:port`或自己设置的代理地址
 
 ## 四、配置选项
 
@@ -432,6 +434,17 @@ const bot = new GeweBot({
 | `async create([contact], roomName)`     | `Promise`              | 创建新房间                   |
 | `async findAll({name: 'name'} or null)` | `Promise<[Room]>`      | 查询符合条件的房间           |
 | `async find({name: 'name'})`            | `Promise<Room>`        | 查询单个符合条件的房间       |
+
+
+### Filebox 类方法说明
+
+| **方法名**                           | **返回值类型**  | **说明**                         |
+|--------------------------------------|-----------------|--------------------------------|
+| `static fromUrl(url)`                | `Filebox`       | 从 URL 创建一个 Filebox 实例     |
+| `static fromFile(filepath)`          | `Filebox`       | 从文件路径创建实例               |
+| `static toDownload(url, type, name)` | `Filebox`       | 从 URL 创建可下载的 Filebox 实例 |
+| `toFile(dest)`                       | `Promise<void>` | 将实例文件下载到指定路径         |
+| `static getFileType(fileName)`       | `string`        | 根据文件名返回文件类型           |
 
 
 ### MessageType 类型表

@@ -42,6 +42,12 @@ export class Message {
     }
     return getContact(this.fromId);
   }
+  talker(){
+    if(this.isRoom){
+      return getContact(this._text.split(':\n')[0])
+    }
+    return getContact(this.fromId);
+  }
 
   to() { // 接收者
     return getContact(this.toId);
@@ -138,6 +144,9 @@ export class Message {
         resolve(null)
       })
     });
+  }
+  async toFilebox(type = 2){
+    return this.toFileBox(type)
   }
   getXml2Json(xml) {
     const parser = new XMLParser();
