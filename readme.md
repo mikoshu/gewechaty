@@ -301,6 +301,8 @@ const onMessage = async (msg) => {
   });
   msg.say(appMsg);
 
+  msg.quote('引用了这条消息') // 引用这条消息传入一个引用时的内容只能是文字
+
   // 下载图片 如果为图片消息可以使用toFileBox方法下载
   const filebox = await msg.toFileBox();
   // 传入一个文件路径 推荐为静态托管目录 如：`${process.cwd()}/static/download` 这样后续需要发送图片时可以直接使用静态托管的http路径
@@ -374,10 +376,9 @@ const bot = new GeweBot({
 | `async mention()`                     | `Promise`              | 获取被@的联系人（尚未实现）。                  |
 | `async mentionSelf()`                 | `Promise`              | 判断是否自己被@。                            |
 | `async forward(to)`                   | `Promise`              | 转发消息。                                   |
+| `async quote(text)`                   | `Promise`              | 引用消息（传入一个字符串）。                     |
 | `date()`                              | `Date`                 | 获取消息的日期。                             |
 | `age()`                               | `number`               | 获取消息的年龄（以秒为单位）。                 |
-| `async toContact()`                   | `Promise`              | 获取名片（尚未实现）。                         |
-| `async toUrlLink()`                   | `Promise`              | 获取链接（尚未实现）。                         |
 | `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，通常用于图片消息。 |
 | `getXml2Json(xml)`                    | `Object`               | 将 XML 解析为 JSON 对象。                    |
 | `static async find(query)`            | `Promise<Contact>`     | (由于未保存聊天信息，暂不支持)               |

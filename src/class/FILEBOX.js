@@ -12,10 +12,10 @@ export class Filebox {
     this.type = ''
     this.name = ''
   }
-  static fromUrl(url){
+  static fromUrl(url, forceType){
     const instance = new Filebox()
     const supportType = ['image', 'file']
-    const type = Filebox.getFileType(url)
+    const type = forceType || Filebox.getFileType(url)
     if(!supportType.includes(type)){
       throw new Error('Filebox只支持图片和文件类型，语音和视频使用 new Audio() 或 new Video() 来创建')
     }

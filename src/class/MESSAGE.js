@@ -1,5 +1,5 @@
 import { XMLParser} from "fast-xml-parser";
-import { say, revork, forward } from '@/action/common.js';
+import { say, revork, forward, quote } from '@/action/common.js';
 import {getContact, find} from '@/action/contact'
 import {getRoomInfo} from '@/action/room'
 import {toFileBox} from '@/action/file'
@@ -98,7 +98,11 @@ export class Message {
     });
   }
 
-  async forward(to) { // ...todo
+  async forward(to) { // 消息转发
+    if(!to){
+      console.error('转发消息时，接收者不能为空')
+      return
+    }
     return forward(this.text(), to, this.type())
   }
 
@@ -148,8 +152,27 @@ export class Message {
   async toFilebox(type = 2){
     return this.toFileBox(type)
   }
+  async quote(title){ // 引用消息
+    if(title === ''){
+      console.error('引用消息时title不能为空')
+      return
+    }
+    
+    let msg = {
+      title,
+      msgid: this._newMsgId,
+      wxid: this.fromId
+    }
+    if(this.isRoom){
+      msg.wxid = this._text.split(':\n')[0]
+    }
+    return quote(msg, this.fromId)
+  }
   getXml2Json(xml) {
-    const parser = new XMLParser();
+    const parser = new XMLParser({
+      ignoreAttributes: false, // 不忽略属性
+      attributeNamePrefix: '', // 移除默认的属性前缀
+    });
     let jObj = parser.parse(xml);
     return jObj
   }
@@ -184,7 +207,10 @@ export class Message {
         case 48:
           return MessageType.Location
         case 49:
-          parser = new XMLParser();
+          parser = new XMLParser({
+            ignoreAttributes: false, // 不忽略属性
+            attributeNamePrefix: '', // 移除默认的属性前缀
+          });
           jObj = parser.parse(xml);
           // console.log(jObj)
           if(jObj.msg.appmsg.type === 5){
@@ -209,11 +235,15 @@ export class Message {
             return MessageType.VideoAccount
           }
         case 10002:
-          parser = new XMLParser();
+          parser = new XMLParser({
+            ignoreAttributes: false, // 不忽略属性
+            attributeNamePrefix: '', // 移除默认的属性前缀
+          });
           jObj = parser.parse(xml);
-          if (jObj.appmsg.type === 'revokemsg'){
+          console.log(jObj)
+          if (jObj.sysmsg.type === 'revokemsg'){
             return MessageType.Revork
-          }else if (jObj.appmsg.type ==='pat'){
+          }else if (jObj.sysmsg.type ==='pat'){
             return MessageType.Pat
           }
         default:

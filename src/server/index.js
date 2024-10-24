@@ -1,6 +1,8 @@
 import koa from 'koa'
 import koaRouter from 'koa-router'
-import bodyParser from 'koa-bodyparser'
+// import bodyParser from 'koa-bodyparser'
+const { bodyParser } = require("@koa/bodyparser");
+import JSONbig from 'json-bigint'
 import serve from 'koa-static'
 import { join } from 'path';
 import {setUrl} from '@/action/setUrl.js'
@@ -31,6 +33,9 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+app.use(bodyParser());
+
+
 export const startServe = (option) => {
   // 启动服务
   let callBackUrl = `http://${ip}:${option.port}${option.route}`
@@ -41,10 +46,12 @@ export const startServe = (option) => {
   // 设置文件保存目录
   app.use(serve(join(process.cwd(), option.static)))
   staticUrl = join(process.cwd(), option.static)
+
+
   // 定义一个接口，能够同时处理 GET 和 POST 请求
   router.post(option.route, async (ctx) => {
     try{
-      const body = ctx.request.body; // 获取 POST 请求的 body 数据
+      const body = JSONbig({ storeAsString: true }).parse(ctx.request.rawBody); // 获取 POST 请求的 body 数据
       if(option.debug){
         console.log(body);
       }
@@ -72,6 +79,8 @@ export const startServe = (option) => {
         }else if(type === MessageType.AddFriend){ // 好友请求
           let obj = getAttributesFromXML(msg.text())
           bot.emit('friendship', new Friendship(obj))
+        }else if(type === MessageType.Revork){ // 消息撤回
+          bot.emit('revoke', msg)
         }else{
           bot.emit('message', msg)
         }
@@ -116,7 +125,9 @@ export const startServe = (option) => {
     console.log('GET 请求的数据:', query);
     ctx.body = "SUCCESS";
   });
-  app.use(bodyParser());
+
+  // app.use(bodyParser());
+  
   
   
   return new Promise((resolve, reject) => {
@@ -161,6 +172,7 @@ export const startServe = (option) => {
           db.connect(getAppId()+'.db')
           console.log('存在缓存数据，启用缓存')
         }
+        
         // 此时再启用回调地址 防止插入数据时回调
         app.use(router.routes())
         app.use(router.allowedMethods())
