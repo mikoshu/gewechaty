@@ -240,7 +240,6 @@ export class Message {
             attributeNamePrefix: '', // 移除默认的属性前缀
           });
           jObj = parser.parse(xml);
-          console.log(jObj)
           if (jObj.sysmsg.type === 'revokemsg'){
             return MessageType.Revork
           }else if (jObj.sysmsg.type ==='pat'){
