@@ -52,11 +52,11 @@ const bot = new GeweBot({
 const onMessage = async (msg) => {
   // 处理消息...
   // 回复文本消息
-  if (msg.type === bot.Message.Type.Text) { //类型详见 MessageType 表
+  if (msg.type() === bot.Message.Type.Text) { //类型详见 MessageType 表
     await msg.say("Hello, World!");
   }
   // 处理图片消息
-  if (msg.type === bot.Message.Type.Image) {
+  if (msg.type() === bot.Message.Type.Image) {
     await msg.say("收到图片");
   }
 };
