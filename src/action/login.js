@@ -28,6 +28,7 @@ const showQrcode = async() => {
     const res = await GetQrcode({
       appId: getAppId()
     })
+    console.log('获取二维码返回值：', res)
     if(res.ret !== 200){
       console.log('获取二维码失败')
       return false
@@ -88,6 +89,7 @@ function waitForCondition() {
 export const login = async (callbackUrl) => {
   try{
     const res = await showQrcode()
+    console.log('showQrcode:', res)
     if(res){
       return await waitForCondition()
     }else{

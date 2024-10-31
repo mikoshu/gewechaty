@@ -163,9 +163,21 @@ class myDB {
 
   // 方法4：插入新的联系人数据，如果存在则更新
   insertContact(contact) {
-    if(contact.userName === null){
-      return
+    if (contact.userName === null) {
+      return;
     }
+  
+    // 定义字段的最大长度
+    const MAX_LENGTH = 255;
+  
+    // 用一个函数来截断字符串
+    const truncate = (value, maxLength = MAX_LENGTH) => {
+      if (typeof value === 'string' && value.length > maxLength) {
+        return value.substring(0, maxLength);
+      }
+      return value;
+    };
+  
     const insertStmt = this.db.prepare(`
       INSERT OR REPLACE INTO contact (
         userName, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
@@ -173,30 +185,30 @@ class myDB {
         smallHeadImgUrl, description, cardImgUrl, labelList, province, city, phoneNumList
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-
+  
     insertStmt.run(
-      contact.userName || null,
-      contact.nickName || null,
-      contact.pyInitial || null,
-      contact.quanPin || null,
+      truncate(contact.userName) || null,
+      truncate(contact.nickName) || null,
+      truncate(contact.pyInitial) || null,
+      truncate(contact.quanPin) || null,
       contact.sex || null,
-      contact.remark || null,
-      contact.remarkPyInitial || null,
-      contact.remarkQuanPin || null,
-      contact.signature || null,
-      contact.alias || null,
-      contact.snsBgImg || null,
-      contact.country || null,
-      contact.bigHeadImgUrl || null,
-      contact.smallHeadImgUrl || null,
-      contact.description || null,
-      contact.cardImgUrl || null,
-      contact.labelList || null,
-      contact.province || null,
-      contact.city || null,
-      contact.phoneNumList || null
+      truncate(contact.remark) || null,
+      truncate(contact.remarkPyInitial) || null,
+      truncate(contact.remarkQuanPin) || null,
+      truncate(contact.signature) || null,
+      truncate(contact.alias) || null,
+      truncate(contact.snsBgImg) || null,
+      truncate(contact.country) || null,
+      truncate(contact.bigHeadImgUrl) || null,
+      truncate(contact.smallHeadImgUrl) || null,
+      truncate(contact.description) || null,
+      truncate(contact.cardImgUrl) || null,
+      truncate(contact.labelList) || null,
+      truncate(contact.province) || null,
+      truncate(contact.city) || null,
+      truncate(contact.phoneNumList) || null
     );
-
+  
     console.log(`缓存联系人: ${contact.userName}`);
   }
 

@@ -6,15 +6,16 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 
 本项目基于 [Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)，请先确认 Gewechat 已经能够正常启动，否则无法使用本插件。
 
-感谢群里大佬 `@1H` 重构了镜像，让gewe镜像不依赖cgroup和docker --privilege可以在更高版本的ubuntu，或者debian系统上运行。
-
+感谢群里大佬 `@1H` 重构了镜像，让gewe镜像不依赖cgroup和docker --privilege可以在更高版本的ubuntu，debian以及macos系统上运行。
+镜像地址 `ghcr.io/tu1h/wechotd/wechotd:alpine`或`registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine`
 导入重构后的镜像
 
 ```bash
-  docker pull registry.cn-chengdu.aliyuncs.com/tu1h/wechotd
-  docker tag registry.cn-chengdu.aliyuncs.com/tu1h/wechotd gewe
+  docker pull registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine
+  docker tag registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine gewe
 ```
 运行镜像容器
+
 ```bash
   mkdir -p /root/temp
   docker run -itd -v /root/temp:/root/temp -p 2531:2531 -p 2532:2532 --name=gewe gewe
@@ -379,26 +380,25 @@ const bot = new GeweBot({
 
 ### Message 类方法表
 
-| **方法名**                            | **返回值类型**         | **说明**                                    |
-|---------------------------------------|------------------------|-------------------------------------------|
-| `isCompanyMsg()`                      | `boolean`              | 判断消息是否为企业微信消息。                 |
-| `from()`                              | `Promise<Contact>`     | 获取消息的发送者。                           |
-| `to()`                                | `Promise<Contact>`     | 获取消息的接收者。                           |
-| `room()`                              | `boolean`              | 判断消息是否为群聊消息。                     |
-| `text()`                              | `string`               | 获取消息的内容。                             |
-| `async say(textOrContactOrFileOrUrl)` | `Promise<ResponseMsg>` | 回复消息。                                   |
-| `type()`                              | `string`               | 获取消息的类型。参考 MessageType             |
-| `self()`                              | `boolean`              | 判断是否为自己发的消息。                     |
-| `async mention()`                     | `Promise`              | 获取被@的联系人（尚未实现）。                  |
-| `async mentionSelf()`                 | `Promise`              | 判断是否自己被@。                            |
-| `async forward(to)`                   | `Promise`              | 转发消息。                                   |
-| `async quote(text)`                   | `Promise`              | 引用消息（传入一个字符串）。                     |
-| `date()`                              | `Date`                 | 获取消息的日期。                             |
-| `age()`                               | `number`               | 获取消息的年龄（以秒为单位）。                 |
-| `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，通常用于图片消息。 |
-| `getXml2Json(xml)`                    | `Object`               | 将 XML 解析为 JSON 对象。                    |
-| `static async find(query)`            | `Promise<Contact>`     | (由于未保存聊天信息，暂不支持)               |
-| `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | （由于未保存聊天信息，暂不支持 ）              |
+| **方法名**                            | **返回值类型**         | **说明**                                              |
+|---------------------------------------|------------------------|-----------------------------------------------------|
+| `isCompanyMsg()`                      | `boolean`              | 判断消息是否为企业微信消息。                           |
+| `from()`                              | `Promise<Contact>`     | 获取消息的发送者。                                     |
+| `to()`                                | `Promise<Contact>`     | 获取消息的接收者。                                     |
+| `room()`                              | `Promise<Room>`        | 获取群信息。                                           |
+| `text()`                              | `string`               | 获取消息的内容。                                       |
+| `async say(textOrContactOrFileOrUrl)` | `Promise<ResponseMsg>` | 回复消息。                                             |
+| `type()`                              | `string`               | 获取消息的类型。参考 MessageType                       |
+| `self()`                              | `boolean`              | 判断是否为自己发的消息。                               |
+| `async mentionSelf()`                 | `Promise`              | 判断是否自己被@。                                      |
+| `async forward(Contact)`              | `Promise`              | 转发消息。                                             |
+| `async quote(text)`                   | `Promise`              | 引用消息（传入一个字符串）。                             |
+| `date()`                              | `Date`                 | 获取消息的日期。                                       |
+| `age()`                               | `number`               | 获取消息的年龄（以秒为单位）。                           |
+| `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，用于图片消息type为图片质量。 |
+| `getXml2Json(xml)`                    | `Object`               | 将 XML 解析为 JSON 对象。                              |
+| `static async find(query)`            | `Promise<Contact>`     | (由于未保存聊天信息，暂不支持)                         |
+| `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | （由于未保存聊天信息，暂不支持 ）                        |
 
 
 ### ResponseMsg 类属性和方法表
