@@ -47,3 +47,7 @@ export const GetQrcode = (data, config) => {
 export const JoinRoom = (data, config) => {
   return post('/group/agreeJoinRoom', data, config)
 }
+
+export const SetRoomNickName = (data, config) => {
+  return post('/group/modifyChatroomNickNameForSelf', data, config)
+}

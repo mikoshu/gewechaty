@@ -1,6 +1,6 @@
 import { say, getWxId } from '@/action/common.js';
 import {inviteMember, delMember, findAll, find, 
-  changeRoomName, getAnnouncement, setAnnouncement, getQrcode,
+  changeRoomName, getAnnouncement, setAnnouncement, getQrcode, setRoomNickName,
   getRoomMemberInfo, getRoomMemberList, createRoom, quitRoom, updateRoomInfo} from '@/action/room.js'
 import {getContact} from '@/action/contact.js'
 import {ResponseMsg} from '@/class/MESSAGE.js'
@@ -78,14 +78,17 @@ export class Room {
   async alias(contact) { // ok
     // 获取成员别名
     const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
-    return data.displayName || null
+    return data?.displayName || null
   }
 
   async has(contact) { // 是否通过memberflag判断？
     // 检查房间是否有某个成员
     const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
-
-    return data.memberFlag !== null
+    if(data === null){
+      return false
+    }else{
+      return true
+    }
   }
 
   async memberAll(query) {
@@ -133,6 +136,15 @@ export class Room {
       const filebox = Filebox.toDownload(this.avatarImg, 'image', 'avatar.jpg');
       resolve(filebox);
     });
+  }
+
+
+  async rename(name){ // 设置我的群昵称
+    if(!name){
+      console.log('输入的昵称不能为空')
+      return this.name
+    }
+    return setRoomNickName(this.chatroomId, name)
   }
 
   // 静态方法

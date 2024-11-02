@@ -1,5 +1,5 @@
 import {GetRoomInfo, InviteMember, DelMember, 
-  ChangeRoomName, GetAnnouncement, SetAnnouncement,JoinRoom,
+  ChangeRoomName, GetAnnouncement, SetAnnouncement,JoinRoom, SetRoomNickName,
   GetRoomMemberInfo, GetRoomMemberList, CreateRoom, QuitRoom, GetQrcode} from '@/api/room.js'
 import {Room} from '@/class/ROOM.js'
 import {getAppId} from '@/utils/auth.js'
@@ -170,5 +170,13 @@ export const joinRoom = async (url) => {
   return JoinRoom({
     appId: getAppId(),
     url
+  })
+}
+
+export const setRoomNickName = async (chatroomId, nickName) => {
+  return SetRoomNickName({
+    appId: getAppId(),
+    chatroomId,
+    nickName
   })
 }
