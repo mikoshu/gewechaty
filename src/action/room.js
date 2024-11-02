@@ -128,11 +128,12 @@ export const setAnnouncement = async (chatroomId, content) => {
 }
 
 export const getRoomMemberInfo = async (chatroomId, wxid) => {
-  return GetRoomMemberInfo({
+  const {memberList} = await GetRoomMemberList({
     appId: getAppId(),
-    chatroomId,
-    memberWxids: [wxid]
+    chatroomId
   })
+  const member = memberList.find(v => v.wxid === wxid)
+  return member
 }
 
 export const getRoomMemberList = async (chatroomId) => {

@@ -1,6 +1,5 @@
 import koa from 'koa'
 import koaRouter from 'koa-router'
-// import bodyParser from 'koa-bodyparser'
 const { bodyParser } = require("@koa/bodyparser");
 import JSONbig from 'json-bigint'
 import serve from 'koa-static'

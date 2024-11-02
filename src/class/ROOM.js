@@ -78,19 +78,14 @@ export class Room {
   async alias(contact) { // ok
     // 获取成员别名
     const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
-    if(data.length === 0){
-      return null
-    }
-    return data[0].remark || null
+    return data.displayName || null
   }
 
   async has(contact) { // 是否通过memberflag判断？
     // 检查房间是否有某个成员
     const data = await getRoomMemberInfo(this.chatroomId, contact._wxid)
-    if(data.length === 0){
-      return false
-    }
-    return data[0].memberFlag !== null
+
+    return data.memberFlag !== null
   }
 
   async memberAll(query) {
