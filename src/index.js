@@ -23,7 +23,7 @@ export class GeweBot {
   constructor(option = {}) {
     // 初始化配置
     Object.assign(this, option)
-    const ip = getLocalIPAddress()
+    const ip = this.ip || getLocalIPAddress()
     this.port = this.port || 3000;
     this.static = this.static ||'static';
     this.proxy = this.proxy || `http://${ip}:${this.port}`;

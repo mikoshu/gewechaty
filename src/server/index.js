@@ -37,14 +37,14 @@ app.use(bodyParser());
 
 export const startServe = (option) => {
   // 启动服务
-  let callBackUrl = `http://${ip}:${option.port}${option.route}`
+  let callBackUrl = `http://${option.ip || ip}:${option.port}${option.route}`
   if(option.proxy){
     callBackUrl = `${option.proxy}${option.route}`
   }
   proxyUrl = option.proxy
   // 设置文件保存目录
-  app.use(serve(join(process.cwd(), option.static)))
   staticUrl = join(process.cwd(), option.static)
+  app.use(serve(staticUrl))
 
 
   // 定义一个接口，能够同时处理 GET 和 POST 请求
@@ -146,6 +146,8 @@ export const startServe = (option) => {
           console.log('未设置appid，启动登录')
           isOnline = {ret: 200, data: false}
         }
+
+        console.log('isOnline',isOnline);
         
         if(isOnline.ret === 200 && isOnline.data === false){
           console.log('未登录')
@@ -177,6 +179,7 @@ export const startServe = (option) => {
         app.use(router.allowedMethods())
 
         const res = await setUrl(callBackUrl)
+        console.log(res);
         if(res.ret === 200){
           console.log(`设置回调地址为：${callBackUrl}`)
           console.log('服务启动成功')
