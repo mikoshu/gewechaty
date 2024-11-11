@@ -4,7 +4,7 @@ import {ResponseMsg} from '@/class/MESSAGE.js'
 export class Contact {
   constructor(contactData) {
     this._name = contactData.nickName || 'no name';
-    this._alias = contactData.remark || this._name;
+    this._alias = contactData.remark || contactData.displayName || this._name;
     // 判断是否是微信好友 暂时不支持
     this._isFriend = true;
     this._wxid = contactData.userName || contactData.wxid || null;
