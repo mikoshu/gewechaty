@@ -85,7 +85,7 @@ export const startServe = (option) => {
         }
       }else if(body && body.TypeName === 'ModContacts'){ // 好友消息， 群信息变更
         // 消息hanlder
-        const id = body.Data.UserName.string
+        const id = body.Data?.UserName?.string||''
         if(id.endsWith('@chatroom')){ // 群消息
           const oldInfo = db.findOneByChatroomId(id)
           const newInfo = await getRoomLiveInfo(id)
