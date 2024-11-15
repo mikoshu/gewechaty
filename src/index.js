@@ -23,12 +23,12 @@ export class GeweBot {
   constructor(option = {}) {
     // 初始化配置
     Object.assign(this, option)
-    const ip = getLocalIPAddress()
+    this.ip = this.ip || getLocalIPAddress();
     this.port = this.port || 3000;
     this.static = this.static ||'static';
-    this.proxy = this.proxy || `http://${ip}:${this.port}`;
-    this.base_api = this.base_api || `http://${ip}:2531/v2/api`;
-    this.file_api = this.file_api || `http://${ip}:2532/download`;
+    this.proxy = this.proxy || `http://${this.ip}:${this.port}`;
+    this.base_api = this.base_api || `http://${this.ip}:2531/v2/api`;
+    this.file_api = this.file_api || `http://${this.ip}:2532/download`;
     this.route = this.route || '/getWechatCallBack'
     this.use_cache = true
     this.debug = this.debug || false
