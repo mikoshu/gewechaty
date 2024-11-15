@@ -18,7 +18,7 @@ export const MessageType = {
   Transfer: 'transfer', //转账
   RedPacket: 'red_packet', //红包
   VideoAccount: 'video_account', // 视频号消息
-  Revork: 'revork', // 撤回消息
+  Revoke: 'revoke', // 撤回消息
   Pat:'pat', // 拍一拍
   Location: 'location', // 位置消息
 };

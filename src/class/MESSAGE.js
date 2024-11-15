@@ -1,5 +1,5 @@
 import { XMLParser} from "fast-xml-parser";
-import { say, revork, forward, quote } from '@/action/common.js';
+import { say, revoke, forward, quote } from '@/action/common.js';
 import {getContact, find} from '@/action/contact'
 import {getRoomInfo} from '@/action/room'
 import {toFileBox} from '@/action/file'
@@ -241,7 +241,7 @@ export class Message {
           });
           jObj = parser.parse(xml);
           if (jObj.sysmsg.type === 'revokemsg'){
-            return MessageType.Revork
+            return MessageType.Revoke
           }else if (jObj.sysmsg.type ==='pat'){
             return MessageType.Pat
           }
@@ -261,7 +261,7 @@ export class ResponseMsg {
   constructor(obj) {
     Object.assign(this, obj);
   }
-  revork() {
-    return revork(this)
+  revoke() {
+    return revoke(this)
   }
 }

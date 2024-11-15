@@ -78,7 +78,7 @@ export const startServe = (option) => {
         }else if(type === MessageType.AddFriend){ // 好友请求
           let obj = getAttributesFromXML(msg.text())
           bot.emit('friendship', new Friendship(obj))
-        }else if(type === MessageType.Revork){ // 消息撤回
+        }else if(type === MessageType.Revoke){ // 消息撤回
           bot.emit('revoke', msg)
         }else{
           bot.emit('message', msg)
