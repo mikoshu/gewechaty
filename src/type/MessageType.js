@@ -1,3 +1,5 @@
+import { Voice } from "@/class/VOICE";
+
 export const MessageType = {
   Unknown: 'unknown', // 未知类型
   FileStart: 'file_start', // 文件开始
@@ -21,4 +23,9 @@ export const MessageType = {
   Revoke: 'revoke', // 撤回消息
   Pat:'pat', // 拍一拍
   Location: 'location', // 位置消息
+  FunctionMsg: 'function_msg', // 微信团队消息
+  NewMonmentTimeline: 'new_monment_timeline', // 朋友圈更新
+  ChatHistroy: 'chat_histroy', // 聊天记录
+  Voip: 'voip', // voip消息
+  RealTimeLocation: 'real_time_location', // 实时位置共享
 };
