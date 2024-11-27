@@ -1,5 +1,5 @@
 import { SendText, SendImg, SendFile, SendUrl, 
-  SendCard, SendVideo, SendVoice, revorkMsg, 
+  SendCard, SendVideo, SendVoice, revokeMsg, 
   SendMiniApp, SendAppMsg, ForwardImage, ForwardFile, 
   ForwardVideo, ForwardUrl, ForwardMiniApp } from '@/api/message.js';
 import {getAppId} from '@/utils/auth.js'
@@ -183,8 +183,8 @@ export const quote = async (obj, toWxid) => {
 }
 
 // 撤回
-export const revork = async (content) => {
-  return revorkMsg({
+export const revoke = async (content) => {
+  return revokeMsg({
     appId: getAppId(),
     toWxid: content.toWxid,
     msgId: content.msgId,

@@ -325,7 +325,7 @@ const onMessage = async (msg) => {
   // 消息撤回
   const myMsg = await msg.say(filebox);
   setTimeout(() => {
-    myMsg.revork();
+    myMsg.revoke();
   }, 1000);
 };
 
@@ -401,7 +401,7 @@ const bot = new GeweBot({
 
 | **方法名** | **返回值类型** | **说明**  |
 |------------|----------------|---------|
-| `revork()` | `Promise`      | 撤回消息。 |
+| `revoke()` | `Promise`      | 撤回消息。 |
 
 ### Contact 类方法表
 
@@ -483,7 +483,7 @@ const bot = new GeweBot({
 | `Transfer`       | 转账         |
 | `RedPacket`      | 红包         |
 | `VideoAccount`   | 视频号消息   |
-| `Revork`         | 撤回消息     |
+| `Revoke`         | 撤回消息     |
 | `Pat`            | 拍一拍       |
 | `Location`       | 位置消息     |
 
