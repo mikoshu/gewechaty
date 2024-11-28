@@ -99,7 +99,6 @@ export class Message {
       return false;
     }
     const result = Message.getXmlToJson(this._msgSource);
-    console.log(result)
     const atUserList = result.msgsource.atuserlist;
     return (Array.isArray(atUserList) && atUserList.includes(this.wxid))
   }
