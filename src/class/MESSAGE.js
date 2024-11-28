@@ -98,7 +98,8 @@ export class Message {
     if (!this.isRoom || !this._msgSource) {
       return false;
     }
-    const result = this.getXmlToJson(this._msgSource);
+    const result = Message.getXmlToJson(this._msgSource);
+    console.log(result)
     const atUserList = result.msgsource.atuserlist;
     return (Array.isArray(atUserList) && atUserList.includes(this.wxid))
   }
@@ -214,7 +215,7 @@ export class Message {
           return MessageType.Location
           break;
         case 49:
-          jObj = getXmlToJson(xml);
+          jObj = Message.getXmlToJson(xml);
           // console.log(jObj)
           if (jObj.msg.appmsg.type === 5) {
             if (jObj.msg.appmsg.title === '邀请你加入群聊') {
@@ -247,7 +248,7 @@ export class Message {
           break;
         case 51:
           //状态通知
-          jObj = getXmlToJson(xml);
+          jObj = Message.getXmlToJson(xml);
           if (jObj.msg.name === 'MomentsTimelineStatus') {
             //新的朋友圈消息
           } else if (jObj.msg.name === 'lastMessage') {
@@ -261,7 +262,7 @@ export class Message {
           //群通知
           break;
         case 10002:
-          jObj = getXmlToJson(xml);
+          jObj = Message.getXmlToJson(xml);
           if (jObj.sysmsg.type === 'revokemsg') {
             return MessageType.Revoke
           } else if (jObj.sysmsg.type === 'pat') {
