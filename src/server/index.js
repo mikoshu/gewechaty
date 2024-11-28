@@ -81,15 +81,15 @@ export const startServe = (option) => {
         }else if(type === MessageType.AddFriend){ // 好友请求
           let obj = getAttributesFromXML(msg.text())
           bot.emit('friendship', new Friendship(obj))
-        }else if(type === MessageType.Revork){ // 消息撤回
+        }else if(type === MessageType.Revoke){ // 消息撤回
           bot.emit('revoke', msg)
         }else{
           bot.emit('message', msg)
         }
       }else if(body && body.TypeName === 'ModContacts'){ // 好友消息， 群信息变更
         // 消息hanlder
-        const id = body.Data.UserName.string
-        if(id.endsWith('@chatroom')){ // 群消息
+        const id = body.Data?.UserName?.string||''
+        if(id.endsWith('@chatroom')&& body.Data?.ImgFlag!=1){ // 群消息
           const oldInfo = db.findOneByChatroomId(id)
           const newInfo = await getRoomLiveInfo(id)
           // 比较成员列表

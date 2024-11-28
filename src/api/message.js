@@ -36,7 +36,7 @@ export const SendAppMsg = (data, config) => {
   return post('/message/postAppMsg', data, config)
 }
 
-export const revorkMsg = (data, config) => {
+export const revokeMsg = (data, config) => {
   return post('/message/revokeMsg', data, config)
 }
 

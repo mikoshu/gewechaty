@@ -198,21 +198,17 @@ bot
     const room = await bot.Room.find({topic: '测试群4'})
     if(room){
       room.on('join', async (room, contact) => {
-        const friend = await bot.Friendship.search(contact._wxid)
         const urlLink = new UrlLink({
           title: `${contact._name}加入了群聊`,
           desc: `微信号：${contact._wxid}`,
-          thumbUrl: `${friend.bigHeadImgUrl}`, // 可以通过search方法获取用户头像
           linkUrl: 'https://www.baidu.com'
         })
         room.say(urlLink)
       })
       room.on('leave', async (room, contact) => {
-        const friend = await bot.Friendship.search(contact._wxid)
         const urlLink = new UrlLink({
           title: `${contact._name}退出了群聊`,
           desc: `微信号：${contact._wxid}`,
-          thumbUrl: `${friend.bigHeadImgUrl}`,
           linkUrl: 'https://www.baidu.com'
         })
         room.say(urlLink)
@@ -329,7 +325,7 @@ const onMessage = async (msg) => {
   // 消息撤回
   const myMsg = await msg.say(filebox);
   setTimeout(() => {
-    myMsg.revork();
+    myMsg.revoke();
   }, 1000);
 };
 
@@ -405,7 +401,7 @@ const bot = new GeweBot({
 
 | **方法名** | **返回值类型** | **说明**  |
 |------------|----------------|---------|
-| `revork()` | `Promise`      | 撤回消息。 |
+| `revoke()` | `Promise`      | 撤回消息。 |
 
 ### Contact 类方法表
 
@@ -487,7 +483,7 @@ const bot = new GeweBot({
 | `Transfer`       | 转账         |
 | `RedPacket`      | 红包         |
 | `VideoAccount`   | 视频号消息   |
-| `Revork`         | 撤回消息     |
+| `Revoke`         | 撤回消息     |
 | `Pat`            | 拍一拍       |
 | `Location`       | 位置消息     |
 
