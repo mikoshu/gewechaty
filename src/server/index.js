@@ -54,6 +54,9 @@ export const startServe = (option) => {
       if(option.debug){
         console.log(body);
       }
+      // all 事件
+      bot.emit('all', body)
+
       if(body && body.TypeName === 'Offline'){
         console.log('断线重连中...')
         const s = await reconnection()
@@ -64,7 +67,7 @@ export const startServe = (option) => {
           process.exit(1);
         }
       }
-      bot.emit('all', body)
+      
       // 判断是否是微信消息
       if(body.Appid && body.TypeName === 'AddMsg'){ // 大部分消息类型都为 AddMsg
         // 消息hanlder
@@ -109,6 +112,8 @@ export const startServe = (option) => {
           }
           db.updateRoom(id, newInfo)
         }
+      }else{
+        bot.emit('other', body)
       }
 
       // "TypeName": "ModContacts", 好友消息， 群信息变更 

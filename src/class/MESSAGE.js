@@ -12,6 +12,7 @@ import {MessageType} from '@/type/MessageType'
 export class Message {
   constructor(data) {
     // 从 JSON 数据结构中提取所需信息
+    // this.appId = data.Appid
     this.fromId = data.Data.FromUserName.string
     this.toId = data.Data.ToUserName.string
     this.isRoom = data.Data.FromUserName.string.endsWith('@chatroom')
