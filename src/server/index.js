@@ -75,7 +75,7 @@ export const startServe = (option) => {
         // 发送消息
         const type = msg.type()
         if(type === MessageType.RoomInvitation){ // 群邀请
-          let obj = msg.getXml2Json(msg.text())
+          let obj = Message.getXmlToJson(msg.text())
           obj.formId = msg.fromId
           bot.emit(`room-invite`, new RoomInvitation(obj))
         }else if(type === MessageType.AddFriend){ // 好友请求

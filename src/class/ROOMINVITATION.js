@@ -11,7 +11,7 @@ export class RoomInvitation {
     this.date = new Date().getTime()
   }
   async accept(){
-    return joinRoom(url)
+    return joinRoom(this.url)
   }
   // 方法2：inviter() - 获取邀请人
   async inviter() {
