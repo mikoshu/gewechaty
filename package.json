@@ -1,6 +1,6 @@
 {
   "name": "gewechaty",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "dist/index.js",
   "scripts": {
     "test": "node ./test.js",
