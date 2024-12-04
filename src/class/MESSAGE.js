@@ -100,7 +100,7 @@ export class Message {
     }
     const result = Message.getXmlToJson(this._msgSource);
     const atUserList = result.msgsource.atuserlist;
-    return (Array.isArray(atUserList) && atUserList.includes(this.wxid))
+    return atUserList?.split(',').includes(this.wxid);
   }
   // 消息转发
   async forward (to) {
