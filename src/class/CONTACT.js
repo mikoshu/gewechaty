@@ -1,5 +1,5 @@
 import {say} from '@/action/common'
-import {setRemark, find, findAll} from '@/action/contact'
+import {setRemark, find, findAll, contactSync} from '@/action/contact'
 import {ResponseMsg} from '@/class/MESSAGE.js'
 export class Contact {
   constructor(contactData) {
@@ -63,10 +63,8 @@ export class Contact {
   }
 
   async sync() {
-    return new Promise((resolve) => {
-      console.log('该方法暂未支持，当前返回已是最新数据');
-      resolve(true);
-    });
+    // this._wxid
+    return await contactSync(this._wxid)
   }
 
   self() {

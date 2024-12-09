@@ -416,7 +416,7 @@ const bot = new GeweBot({
 | `province()`                          | `string`       | 返回联系人的省份信息。                                                           |
 | `city()`                              | `string`       | 返回联系人的城市信息。                                                           |
 | `async avatar()`                      | `Promise`      | 返回联系人的头像 URL。                                                           |
-| `async sync()`                        | `Promise`      | 同步联系人信息，当前未支持，直接返回 `true`。                                      |
+| `async sync()`                        | `Promise`      | 同步联系人信息，同步后会自动更新本地缓存。                                      |
 | `self()`                              | `boolean`      | 判断该联系人是否为当前用户自己。                                                 |
 
 ### Contact 类静态方法表

@@ -33,6 +33,23 @@ export const getContact = async (wxid) => { // 使用id查询
   return contact ? new Contact(contact) : null
 }
 
+export const contactSync = async (wxid) => {
+  const info = await getInfo({
+    appId: getAppId(),
+    wxids: [wxid]
+  })
+  if(!info || info.length === 0){
+    console.log('未找到')
+    return null
+  }
+  let contact = info[0] || null
+  if(contact){ // 插入缓存
+    db.insertContact(contact)
+  }
+  return contact ? new Contact(contact) : null
+}
+
+
 export const find = async (content) => { // 使用name alias wxid查询
   let contactsInfo = ''
   if(typeof content === 'string'){
