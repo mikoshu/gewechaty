@@ -314,6 +314,14 @@ const onMessage = async (msg) => {
   });
   msg.say(appMsg);
 
+  // 发送表情包
+  // 此处的emojiMd5为emoji消息的md5字符串 通过回调消息获取
+  const emoji = new Emoji({
+      emojiMd5: '6fde3fed2add8451338f3fdd67983b7d',
+      emojiSize: 17799
+  });
+  msg.say(emoji);
+
   msg.quote('引用了这条消息') // 引用这条消息传入一个引用时的内容只能是文字
 
   // 下载图片 如果为图片消息可以使用toFileBox方法下载

@@ -1,7 +1,9 @@
-import { SendText, SendImg, SendFile, SendUrl, 
-  SendCard, SendVideo, SendVoice, revokeMsg, 
-  SendMiniApp, SendAppMsg, ForwardImage, ForwardFile, 
-  ForwardVideo, ForwardUrl, ForwardMiniApp } from '@/api/message.js';
+import {
+  SendText, SendImg, SendFile, SendUrl,
+  SendCard, SendVideo, SendVoice, revokeMsg,
+  SendMiniApp, SendAppMsg, ForwardImage, ForwardFile,
+  ForwardVideo, ForwardUrl, ForwardMiniApp, SendEmoji
+} from '@/api/message.js';
 import {getAppId} from '@/utils/auth.js'
 import {Filebox} from '@/class/FILEBOX'
 import {UrlLink} from '@/class/URLLINK'
@@ -12,6 +14,7 @@ import {MiniApp} from '@/class/MINIAPP.js'
 import {AppMsg} from '@/class/APPMSG.js'
 import {MessageType} from '@/type/MessageType'
 import {db} from '@/sql/index.js'
+import {Emoji} from "@/class/EMOJI";
 
 export let isCached = false
 
@@ -165,7 +168,14 @@ export const say = async (content, toWxid, ats) => {
         toWxid,
         appmsg: content.appmsg,
       })
-    }else{
+    } else if (content instanceof Emoji) {
+      return SendEmoji({
+        appId: getAppId(),
+        toWxid,
+        emojiMd5: content.emojiMd5,
+        emojiSize: content.emojiSize,
+      })
+    } else{
       throw new Error('无法发送的消息类型')
     }
   }catch(e){
