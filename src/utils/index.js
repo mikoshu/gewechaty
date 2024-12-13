@@ -56,7 +56,6 @@ export const joinURL = (...parts) => {
     // 使用 '/' 拼接所有有效部分
     return validParts.join('/');
 }
-// getFileNameFromUrl('http://121.37.193.110:2532/download/20240924/wx_jk5smGp4fqSz4A3haz0_7/76764118-925f-421e-a93e-c3dbc6f4651f.png')
 
 export const compareMemberLists = (oldMembers, newMembers) => {
     // 将成员列表转换为以 wxid 为键的对象，便于查找
