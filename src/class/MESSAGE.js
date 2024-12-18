@@ -282,6 +282,9 @@ export class Message {
       return MessageType.Unknown
     }
   }
+  static revoke (obj) {
+    return revoke(obj)
+  }
 }
 
 export class ResponseMsg {
@@ -292,3 +295,4 @@ export class ResponseMsg {
     return revoke(this)
   }
 }
+
