@@ -16,7 +16,7 @@ import {logout} from '@/action/login.js'
 import { Friendship } from './class/FRIENDSHIP'
 import {getMyInfo, getMyQrcode, setMyInfo, setPrivacy, setAvatar, getDevices} from '@/action/personal.js'
 import {getAppId, getToken, getUuid} from '@/utils/auth.js'
-
+import {db} from '@/sql/index.js'
 
 
 
@@ -38,6 +38,7 @@ export class GeweBot {
     this.Room = Room
     this.Friendship = Friendship
     this.Message = Message
+    this.db = db
     // 初始化事件监听器
   }
   async start(){

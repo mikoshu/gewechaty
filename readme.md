@@ -37,6 +37,7 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 
 - 由于使用了`better-sqlite3`作为数据缓存，内置的二进制文件对node版本有兼容依赖，建议使用node版本为20.17.0，可以使用[volta](https://volta.sh/)来管理node版本。
 - 首次使用时需要缓存所有联系人和保存的群数据，如果联系人较多，可能会比较耗时，之后将会自动维护db缓存数据无需再次处理。
+- 开放本地sqlite数据库操作，如使用bot.db.findAllRooms()可以获取所有群数据，使用bot.db.findAllContacts()可以获取所有联系人数据（更多方法参考源码/src/sql/index.js）。
 
 
 ## 二、安装
