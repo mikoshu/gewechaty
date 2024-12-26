@@ -33,6 +33,14 @@ export class GeweBot {
     this.route = this.route || '/getWechatCallBack'
     this.use_cache = true
     this.debug = this.debug || false
+    // 处理子服务
+    this.subHost = this.subHost || ''
+    this.hostNode = this.hostNode || ''
+    this.isSub = this.isSub || false
+    if(this.isSub){
+      this.base_api = `${this.hostNode}/subApi`
+      this.file_api = `${this.hostNode}/subDownload`
+    }
     // 初始化类
     this.Contact = Contact;
     this.Room = Room

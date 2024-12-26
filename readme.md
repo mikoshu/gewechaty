@@ -226,6 +226,29 @@ bot
   });
 ```
 
+双开支持：
+
+- 由于gewe镜像支持登录两个号，但是只支持一个回调地址，现在可以使用一个主服务以端口转发的形式来处理同时登录两个账号，如下：
+
+- 先启动一个gewechaty主项目
+```js
+const bot = new GeweBot({
+  port:3000,
+  subCallback: 'http://localhost:3001', // 子服务地址 设置后会将不是自己appid的回调详细转发到这个地址
+})
+```
+- 再启动第二个gewechaty子项目
+
+```js
+const bot = new GeweBot({
+  port: 3001,
+  isSub: true, // 标识为子服务 将会自动处理消息转发
+  hostNode: 'http://192.168.64.1:3000', // 主服务的host
+})
+```
+（以上为实验功能，本机测试偶尔情况下会收不到第一个登录微信的回调，原因不明，此时最好重启容器，删除本地appid信息重新执行登录）
+
+
 ES6 import 方式引用
 ```javascript
 import pkg from 'gewechaty'

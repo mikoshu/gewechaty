@@ -3,6 +3,7 @@ import koaRouter from 'koa-router'
 const { bodyParser } = require("@koa/bodyparser");
 import JSONbig from 'json-bigint'
 import serve from 'koa-static'
+import axios from 'axios'
 import { join } from 'path';
 import {setUrl} from '@/action/setUrl.js'
 import {login, reconnection} from '@/action/login.js'
@@ -14,7 +15,7 @@ import {Message} from '@/class/MESSAGE.js'
 import {Contact} from '@/class/CONTACT.js'
 import {Room} from '@/class/ROOM.js'
 import { botEmitter, roomEmitter } from '@/bot.js'
-import { getAppId } from '@/utils/auth.js';
+import { getAppId, getToken } from '@/utils/auth.js';
 import {db} from '@/sql/index.js'
 import {MessageType} from '@/type/MessageType'
 import {RoomInvitation} from '@/class/ROOMINVITATION.js'
@@ -47,6 +48,48 @@ export const startServe = (option) => {
   staticUrl = join(process.cwd(), option.static)
 
 
+  const proxyFn = async (ctx, baseUrl, route) => {
+    const method = ctx.method;
+    const url = ctx.req.url.replace(route, ''); // 包含路径和查询字符串
+    let headers = { ...ctx.request.headers };
+    // 移除或修改不必要的头信息，避免转发问题
+    delete headers['host']; // 删除host头，或者设置为目标主机
+    // 获取请求体数据
+    const data = ctx.request.body;
+    try {
+      // 使用axios转发请求到目标服务器
+      const response = await axios({
+        method: method,
+        url: `${baseUrl}${url}`,
+        headers: headers,
+        data: data,
+        // responseType: 'stream', // 处理可流式响应
+      });
+
+      // 设置响应状态码和头信息
+      ctx.status = response.status;
+      ctx.set(response.headers);
+
+      // 将响应数据转发给客户端
+      ctx.body = response.data;
+    } catch (err) {
+      // 错误处理
+      ctx.status = err.response ? err.response.status : 500;
+      ctx.body = err.message;
+      console.error('转发请求出错：', err.message);
+    }
+  }
+
+  if(option.subCallback){ // 存在子服务器
+    router.post(/^\/subApi\/(.*)/, async (ctx) => {
+      return proxyFn(ctx, option.base_api, '/subApi')
+    })
+    router.get(/^\/subDownload\/(.*)/, async (ctx) => {
+      return proxyFn(ctx, option.file_api, '/subDownload')
+    })
+  }
+
+
   // 定义一个接口，能够同时处理 GET 和 POST 请求
   router.post(option.route, async (ctx) => {
     try{
@@ -56,6 +99,22 @@ export const startServe = (option) => {
       }
       // all 事件
       bot.emit('all', body)
+
+      if(body.Appid !== getAppId() && option.subCallback){ // appid不同时不处理消息
+        if(body.token && body.token === getToken()){
+          ctx.body = "SUCCESS";
+          return
+        }
+        await fetch(`${option.subCallback}/getWechatCallBack`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        })
+        ctx.body = "SUCCESS";
+        return
+      }
 
       if(body && body.TypeName === 'Offline'){
         console.log('断线重连中...')
@@ -178,9 +237,24 @@ export const startServe = (option) => {
         }
         
         // 此时再启用回调地址 防止插入数据时回调
+
         app.use(router.routes())
         app.use(router.allowedMethods())
 
+        if(option.isSub){
+          callBackUrl = `${option.hostNode}${option.route}`
+          const res = await setUrl(callBackUrl)
+          if(res.ret === 200){
+            console.log(`本项目回调由主服务转发，设置回调地址为：${callBackUrl}`)
+            console.log('服务启动成功')
+            resolve({app, router})
+          }else{
+            console.log('回调地址设置失败，请确定gewechat能访问到回调地址网络')
+            reject(res)
+            process.exit(1);
+          }
+          return
+        }
         const res = await setUrl(callBackUrl)
         if(res.ret === 200){
           console.log(`设置回调地址为：${callBackUrl}`)
