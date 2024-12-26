@@ -243,7 +243,7 @@ const bot = new GeweBot({
 const bot = new GeweBot({
   port: 3001,
   isSub: true, // 标识为子服务 将会自动处理消息转发
-  hostNode: 'http://192.168.64.1:3000', // 主服务的host
+  hostNode: 'http://localhost:3000', // 主服务的host
 })
 ```
 （以上为实验功能，本机测试偶尔情况下会收不到第一个登录微信的回调，原因不明，此时最好重启容器，删除本地appid信息重新执行登录）
