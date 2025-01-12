@@ -12,19 +12,19 @@ export {AppMsg} from '@/class/APPMSG.js'
 import {Message} from '@/class/MESSAGE.js'
 import {Room} from '@/class/ROOM.js'
 import { getLocalIPAddress } from "@/utils/index.js";
-import {logout} from '@/action/login.js'
+import {logout, login} from '@/action/login.js'
 import { Friendship } from './class/FRIENDSHIP'
 import {getMyInfo, getMyQrcode, setMyInfo, setPrivacy, setAvatar, getDevices} from '@/action/personal.js'
 import {getAppId, getToken, getUuid} from '@/utils/auth.js'
 import {db} from '@/sql/index.js'
-
+import {cacheAllContact} from '@/action/contact.js'
 
 
 export class GeweBot {
   constructor(option = {}) {
     // 初始化配置
     Object.assign(this, option)
-    const ip = getLocalIPAddress()
+    const ip = option.ip || getLocalIPAddress()
     this.port = this.port || 3000;
     this.static = this.static ||'static';
     this.proxy = this.proxy || `http://${ip}:${this.port}`;
@@ -49,6 +49,10 @@ export class GeweBot {
   }
   on(eventName, callback) {
     bot.on(eventName, callback)
+  }
+  login(){ // return boolean
+    // 登录
+    return login()
   }
   logout(){ // return boolean
     // 退出登录
@@ -82,4 +86,7 @@ export class GeweBot {
     return getDevices()
   }
  
+  async refreshContactCache(){ // 刷新联系人缓存
+    return await cacheAllContact()
+  }
 }

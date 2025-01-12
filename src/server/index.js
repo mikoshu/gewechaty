@@ -37,7 +37,8 @@ app.use(bodyParser());
 
 export const startServe = (option) => {
   // 启动服务
-  let callBackUrl = `http://${ip}:${option.port}${option.route}`
+  var cbip = option.ip || ip;
+  let callBackUrl = `http://${cbip}:${option.port}${option.route}`
   if(option.proxy){
     callBackUrl = `${option.proxy}${option.route}`
   }
@@ -187,7 +188,7 @@ export const startServe = (option) => {
           console.log('服务启动成功')
           resolve({app, router})
         }else{
-          console.log('回调地址设置失败，请确定gewechat能访问到回调地址网络')
+          console.log('回调地址设置失败，请确定gewechat能访问到回调地址网络: ', callBackUrl)
           reject(res)
           process.exit(1);
         }

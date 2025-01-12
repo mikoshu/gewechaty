@@ -23,19 +23,31 @@ module.exports = {
     },
     extensions: ['.js'],  // 支持导入的文件类型
   },
+  // 添加缓存配置
+  cache: {
+    type: 'filesystem', // 使用文件系统缓存
+    buildDependencies: {
+      config: [__filename], // 构建依赖
+    },
+  },
   module: {
     rules: [
       {
-        test: /\.js$/,  // 匹配所有 JS 文件
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',  // 使用 Babel 转译
+          loader: 'swc-loader',
           options: {
-            presets: ['@babel/preset-env'],  // 转译为 ES5 或 ES6+ 兼容的语法
-          },
-        },
-      },
-    ],
+            jsc: {
+              parser: {
+                syntax: "ecmascript"
+              },
+              target: "es2015"
+            }
+          }
+        }
+      }
+    ]
   },
   // optimization: {
   //   splitChunks: {
@@ -54,5 +66,10 @@ module.exports = {
   externals: {
     'better-sqlite3': 'commonjs better-sqlite3',
     'ds': 'commonjs ds'
-  }  
+  },
+  // 添加性能优化配置
+  optimization: {
+    moduleIds: 'deterministic', // 优化模块 ID
+    minimize: true, // 启用压缩
+  }
 };
