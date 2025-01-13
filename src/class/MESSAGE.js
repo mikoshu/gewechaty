@@ -16,12 +16,27 @@ export class Message {
   constructor(data) {
     // 从 JSON 数据结构中提取所需信息
     this.wxid = data.Wxid;
-    this.fromId = data.Data.FromUserName.string;
-    this.toId = data.Data.ToUserName.string;
-    this.isRoom = data.Data.FromUserName.string.endsWith('@chatroom');
+    
+    if(data.Data.FromUserName.string.includes('@chatroom')){ // 新版本微信
+      this.isRoom = true;
+      this.roomId = data.Data.FromUserName.string;
+      this.fromId = data.Data.Content.string.split(':\n')[0];
+      this.toId = this.roomId;
+      this._text = data.Data.Content.string.split(':\n').slice(1).join(':\n') || '';
+    }else if (data.Data.ToUserName.string.includes('@chatroom')){ // 旧版本微信
+      this.isRoom = true;
+      this.roomId = data.Data.ToUserName.string;
+      this.fromId = data.Data.FromUserName.string;
+      this.toId = this.roomId;
+      this._text = data.Data.Content.string || '';
+    }else{
+      this.isRoom = false;
+      this.fromId = data.Data.FromUserName.string;
+      this.toId = data.Data.ToUserName.string;
+      this._text = data.Data.Content.string || '';
+    }
     this._msgId = data.Data.MsgId || null;
     this._newMsgId = data.Data.NewMsgId || null;
-    this._text = data.Data.Content.string || '';
     this._type = data.Data.MsgType;
     this._createTime = data.Data.CreateTime; // 原始的 CreateTime
     this._date = this._createTime * 1000; // 转换时间戳为 Date
@@ -32,7 +47,7 @@ export class Message {
     this._msgSource = data.Data.MsgSource || null;
 
     if (this.isRoom) { // 执行一次 自动插入房间数据
-      getRoomInfo(this.fromId);
+      getRoomInfo(this.roomId);
     }
   }
 
@@ -43,16 +58,10 @@ export class Message {
   }
   //发送者
   from () {
-    if (this.isRoom) {
-      return getContact(this._text.split(':\n')[0])
-    }
     return getContact(this.fromId);
   }
   //发送者
   talker () {
-    if (this.isRoom) {
-      return getContact(this._text.split(':\n')[0])
-    }
     return getContact(this.fromId);
   }
   //接收者
@@ -63,20 +72,17 @@ export class Message {
   async room () {
     if (!this.isRoom) return false;
     if (!this._roomInfo) {
-      this._roomInfo = await getRoomInfo(this.fromId);
+      this._roomInfo = await getRoomInfo(this.roomId);
     }
     return this._roomInfo;
   }
   // 消息内容
   text () {
-    if (this.isRoom) {
-      return this._text.split(':\n').slice(1).join(':\n')
-    }
     return this._text;
   }
   // 发送消息
   async say (textOrContactOrFileOrUrl) {
-    const res = await say(textOrContactOrFileOrUrl, this.fromId)
+    const res = await say(textOrContactOrFileOrUrl, this.isRoom ? this.roomId : this.fromId)
     return new ResponseMsg(res)
   }
   // 消息类型
@@ -121,7 +127,7 @@ export class Message {
   }
   // 获取名片 。。。todo
   async toContact () {
-    console.log('暂不支持')
+    console.log('暂不支持');
     return null;
   }
   // 获取链接。。。todo
@@ -135,12 +141,8 @@ export class Message {
       console.log('不是图片类型，无法调用toFileBox方法');
       return null;
     }
-    let xml = ''
-    if (this.isRoom) {
-      xml = this._text.split(":\n")[1]
-    } else {
-      xml = this._text
-    }
+    let xml = this._text
+
     try {
       const url = await toFileBox(xml, type);
       return Filebox.toDownload(url)
@@ -161,9 +163,7 @@ export class Message {
       msgid: this._newMsgId,
       wxid: this.fromId
     }
-    if (this.isRoom) {
-      msg.wxid = this._text.split(':\n')[0]
-    }
+
     return quote(msg, this.fromId)
   }
   // 获取xml转json
