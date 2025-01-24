@@ -285,6 +285,28 @@ export class Message {
   static revoke (obj) {
     return revoke(obj)
   }
+  // 引用消息
+  static async quote (obj) {
+    if (obj.title || obj.title === '') {
+      console.error('引用消息时title不能为空')
+      return
+    }
+    if (!obj.wxid) {
+      console.error('引用消息时wxid不能为空')
+      return
+    }
+    if (!obj.msgid) {
+      console.error('引用消息时msgid不能为空,(对应字段为data.Data.NewMsgId)')
+      return
+    }
+    // let msg = {
+    //   title,
+    //   msgid: this._newMsgId,
+    //   wxid: this.fromId
+    // }
+
+    return quote(obj, obj.wxid)
+  }
 }
 
 export class ResponseMsg {

@@ -325,6 +325,14 @@ const onMessage = async (msg) => {
 
   msg.quote('引用了这条消息') // 引用这条消息传入一个引用时的内容只能是文字
 
+  // 静态引用方法
+  await bot.Message.quote({
+    title: '引用了这条消息',
+    msgid: this._newMsgId,
+    wxid: this.fromId
+  })
+
+
   // 下载图片 如果为图片消息可以使用toFileBox方法下载
   const filebox = await msg.toFileBox();
   // 传入一个文件路径 推荐为静态托管目录 如：`${process.cwd()}/static/download` 这样后续需要发送图片时可以直接使用静态托管的http路径
