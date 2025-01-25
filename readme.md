@@ -289,7 +289,7 @@ const onMessage = async (msg) => {
   });
   msg.say(video);
 
-  // 发送语音 （由于确实silk文件暂时未发送成功 待测试）
+  // 发送语音
   const voice = new Voice({
     voiceUrl: `${bot.proxy}/test/test2.silk`,
     voiceDuration: 3000, // 语音时长(注意 语音时长以毫秒为单位)
