@@ -90,28 +90,31 @@ export const startServe = (option) => {
       }else if(body && body.TypeName === 'ModContacts'){ // 好友消息， 群信息变更
         // 消息hanlder
         const id = body.Data?.UserName?.string||''
-        if(id.endsWith('@chatroom')&& body.Data?.ImgFlag!=1){ // 群消息
+        if(id.endsWith('@chatroom')){ // 群消息
           const oldInfo = db.findOneByChatroomId(id)
           const newInfo = await getRoomLiveInfo(id)
-          // 比较成员列表
-          const obj = compareMemberLists(oldInfo.memberList, newInfo.memberList)
-          if(obj.added.length > 0){
-            obj.added.map((item) => {
-              const member = new Contact(item)
-              roomEmitter.emit(`join:${id}`, new Room(newInfo), member, member.inviterUserName)
-            })
+          // 群聊200人以上无法直接扫码进群，需要邀请，因此增加特殊处理
+          if (oldInfo.memberList.length >= 200 || body.Data?.ImgFlag!=1) {
+            // 比较成员列表
+            const obj = compareMemberLists(oldInfo.memberList, newInfo.memberList)
+            if(obj.added.length > 0){
+              obj.added.map((item) => {
+                const member = new Contact(item)
+                roomEmitter.emit(`join:${id}`, new Room(newInfo), member, member.inviterUserName)
+              })
+            }
+            if(obj.removed.length > 0){
+              obj.removed.map((item) => {
+                const member = new Contact(item)
+                roomEmitter.emit(`leave:${id}`, new Room(newInfo), member)
+              })
+            }
+            
+            if(body.Data.NickName.string !== oldInfo.nickName){ // 群名称变动
+              roomEmitter.emit(`topic:${id}`, new Room(newInfo), body.Data.NickName.string, oldInfo.nickName)
+            }
+            db.updateRoom(id, newInfo)
           }
-          if(obj.removed.length > 0){
-            obj.removed.map((item) => {
-              const member = new Contact(item)
-              roomEmitter.emit(`leave:${id}`, new Room(newInfo), member)
-            })
-          }
-          
-          if(body.Data.NickName.string !== oldInfo.nickName){ // 群名称变动
-            roomEmitter.emit(`topic:${id}`, new Room(newInfo), body.Data.NickName.string, oldInfo.nickName)
-          }
-          db.updateRoom(id, newInfo)
         }
       }else{
         bot.emit('other', body)
