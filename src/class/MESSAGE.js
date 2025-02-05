@@ -287,7 +287,7 @@ export class Message {
   }
   // 引用消息
   static async quote (obj) {
-    if (obj.title || obj.title === '') {
+    if (!obj.title || obj.title === '') {
       console.error('引用消息时title不能为空')
       return
     }
