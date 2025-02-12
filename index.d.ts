@@ -125,8 +125,13 @@ declare module 'gewechaty' {
   
     export class Friendship {
       accept(): Promise<void>;
+      reject(content: string): Promise<void>;
       hello(): string;
+      contact(): Contact;
       type(): number;
+
+      static search(query: string): Promise<Contact | undefined>;
+      static add(contact: Contact, hello: string): Promise<void>;
     }
   
     export interface FriendshipStatic {
