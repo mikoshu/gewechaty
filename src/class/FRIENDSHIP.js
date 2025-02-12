@@ -2,7 +2,7 @@ import {acceptContact, searchContact, addContact, rejectContact} from '@/action/
 export class Friendship {
   constructor(obj) {
     this.fromName = obj.fromnickname || obj.nickName; // 代表联系人的信息
-    this.formId = obj.fromusername
+    this.fromId = obj.fromusername
     this.v3 = obj.encryptusername || obj.v3
     this.v4 = obj.ticket || obj.v4
     this.bigHeadImgUrl = obj.BigHeadImgUrl || obj.bigHeadImgUrl
@@ -34,7 +34,7 @@ export class Friendship {
   contact() {
     return new Contact({
       nickName: this.fromName,
-      wxid: this.formId,
+      wxid: this.fromId,
       bigHeadImgUrl: this.bigHeadImgUrl,
       smallHeadImgUrl: this.smallHeadImgUrl,
     })
