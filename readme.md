@@ -6,23 +6,6 @@ gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-
 
 本项目基于 [Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)，请先确认 Gewechat 已经能够正常启动，否则无法使用本插件。
 
-感谢群里大佬 `@1H` 重构了镜像，让gewe镜像不依赖cgroup和docker --privilege可以在更高版本的ubuntu，debian以及macos系统上运行。
-镜像地址 `ghcr.io/tu1h/wechotd/wechotd:alpine`或`registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine`
-导入重构后的镜像
-
-```bash
-  docker pull registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine
-  docker tag registry.cn-chengdu.aliyuncs.com/tu1h/wechotd:alpine gewe
-```
-运行镜像容器
-
-```bash
-  mkdir -p /root/temp
-  docker run -itd -v /root/temp:/root/temp -p 2531:2531 -p 2532:2532 --name=gewe gewe
-  #将容器设置成开机运行
-  docker update --restart=always gewe
-```
-
 - 项目不断完善中，请务必使用最新版本。
 - 将在项目运行根目录创建一个ds.json 用于存储 appid token 和uuid 同时创建 ${appid}.db 用于缓存联系人和群信息，以确保可以使用联系人昵称和群名称查询相关信息，无需直接使用wxid查询， 如果确实需要使用wxid查询可以直接传入wxid，如`bot.Contact.find({id: 'wxid_xxxx'})`。
 - 注意如果本地没有ds.json文件将会以空的appid向gewechat发起新的登录请求，如果你已经登录了gewechat不想退出登录可以自行构建一个ds.json文件。结构如下：(如未保存这些信息，建议直接手机退出登录后直接运行项目，将会唤起重新登录流程)
