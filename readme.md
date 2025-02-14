@@ -1,5 +1,7 @@
 # gewechaty
 
+## 由于依赖项目Gewechat镜像目前已经停止下载，本项目不再维护（已有镜像的用户可以继续使用）。
+
 ## 一、简介
 
 gewechaty 是基于[Gewechat](https://github.com/Devo919/Gewechat?tab=readme-ov-file)项目的二次封装，提供了更方便的使用方式。参考 wechaty 的 api 实现，以满足更快速开发的需求（由于gewechat接口限制无法完全平滑迁移只是提供更便捷的使用方法，如有些同步的方法需要改为异步）。
