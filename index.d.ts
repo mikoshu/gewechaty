@@ -320,14 +320,15 @@ declare module 'gewechaty' {
     }
   
     export interface MiniAppPayload {
-      appid: string;         // miniAppId
+      miniAppId: string;         // miniAppId
       description?: string;
-      iconUrl?: string;
-      pagePath?: string;
+      coverImgUrl: string;
+      pagePath: string;
       thumbKey?: string;
       thumbUrl?: string;
       title: string;
-      username: string;      // userName
+      userName: string;      // userName
+      displayName: string;
     }
   
     export class AppMsg {
