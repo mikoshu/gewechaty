@@ -1,6 +1,12 @@
 import DS from 'ds';
+import { join } from 'node:path';
 
-let ds = new DS()
+let ds;
+
+export const createDS = (data_dir) => {
+  const ds_path = join(data_dir, 'ds.json')
+  ds = new DS(ds_path)
+}
 
 export const getToken = () => {
   return ds.token || ''
