@@ -21,6 +21,11 @@ import {cacheAllContact} from '@/action/contact.js'
 import { join } from 'node:path';
 import { mkdirSync, existsSync } from 'node:fs'
 
+function getDefaultDataPath() {
+  const dsPath = join(process.cwd(), 'ds.json')
+  return existsSync(dsPath) ? process.cwd() : join(process.cwd(), 'data')
+}
+
 export class GeweBot {
   constructor(option = {}) {
     // 初始化配置
@@ -34,7 +39,7 @@ export class GeweBot {
     this.route = this.route || '/getWechatCallBack'
     this.use_cache = true
     this.debug = this.debug || false
-    this.data_dir = this.data_dir || join(process.cwd(), 'data')
+    this.data_dir = this.data_dir || join(process.cwd(), getDefaultDataPath())
     // 初始化类
     this.Contact = Contact;
     this.Room = Room
