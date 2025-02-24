@@ -220,7 +220,7 @@ declare module 'gewechaty' {
       room(): Promise<Room | false>;
       text(): string;
       say(textOrContactOrFileOrUrl: string | Contact | Filebox | UrlLink | MiniApp | AppMsg | Voice | WeVideo | Emoji): Promise<ResponseMsg>;
-      type(): number;
+      type(): MessageType;
       self(): boolean;
       mention(): Promise<null>; // TODO as noted in the code
       mentionSelf(): Promise<boolean>;
@@ -243,30 +243,33 @@ declare module 'gewechaty' {
   
     export interface MessageStatic {
       Type: {
-        Unknown: 0;
-        Text: 1;
-        Image: number;
-        Voice: number;
-        AddFriend: number;
-        Contact: number;
-        Video: number;
-        Emoji: number;
-        Location: number;
-        Link: number;
-        File: number;
-        RealTimeLocation: number;
-        ChatHistroy: number;
-        MiniApp: number;
-        VideoAccount: number;
-        Quote: number;
-        FileStart: number;
-        Transfer: number;
-        RedPacket: number;
-        Revoke: number;
-        Pat: number;
-        FunctionMsg: number;
-        Voip: number;
-        RoomInvitation: number;
+        Unknown: 'unknown',
+        FileStart: 'file_start',
+        File: 'file',
+        Voice: 'voice',
+        Contact: 'contact',
+        Emoji: 'emoji',
+        Image: 'image',
+        Text: 'text',
+        Video: 'video',
+        Url: 'link',
+        RoomInvitation: 'room_invitation', 
+        MiniApp:'mini_app',
+        AppMsg: 'app_msg',
+        Link: 'link',
+        AddFriend: 'add_friend',
+        Quote: 'quote',
+        Transfer: 'transfer',
+        RedPacket: 'red_packet',
+        VideoAccount: 'video_account',
+        Revoke: 'revoke',
+        Pat:'pat',
+        Location: 'location',
+        FunctionMsg: 'function_msg',
+        NewMonmentTimeline: 'new_monment_timeline',
+        ChatHistroy: 'chat_histroy',
+        Voip: 'voip',
+        RealTimeLocation: 'real_time_location',
       };
     }
   
@@ -359,7 +362,7 @@ declare module 'gewechaty' {
       emit(event: string, ...args: any[]): boolean;
     }
   
-    export type MessageType = keyof MessageStatic["Type"];
+    export type MessageType = MessageStatic['Type'][keyof MessageStatic['Type']];
   
     export interface MessageQueryFilter {
       id?: string;
