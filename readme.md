@@ -491,6 +491,7 @@ const bot = new GeweBot({
 | `Revoke`         | 撤回消息     |
 | `Pat`            | 拍一拍       |
 | `Location`       | 位置消息     |
+| 更多请参阅 `.d.ts` 的 `MessageStatic.type`|
 
 ### Friendship 类方法表
 

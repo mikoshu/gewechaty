@@ -268,7 +268,9 @@ declare module 'gewechaty' {
         FunctionMsg: 'function_msg',
         NewMonmentTimeline: 'new_monment_timeline',
         ChatHistroy: 'chat_histroy',
+        RoomVoip: 'room_voip',
         Voip: 'voip',
+        VoipHangup: 'voip_hangup',
         RealTimeLocation: 'real_time_location',
       };
     }
