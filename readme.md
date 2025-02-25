@@ -185,9 +185,10 @@ bot
     if(room){
       room.on('join', async (room, contact) => {
         const urlLink = new UrlLink({
-          title: `${contact._name}加入了群聊`,
+          title: `${contact.name()}加入了群聊`,
           desc: `微信号：${contact._wxid}`,
-          linkUrl: 'https://www.baidu.com'
+          linkUrl: 'https://www.example.com',
+          thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })
         room.say(urlLink)
       })
@@ -195,7 +196,8 @@ bot
         const urlLink = new UrlLink({
           title: `${contact._name}退出了群聊`,
           desc: `微信号：${contact._wxid}`,
-          linkUrl: 'https://www.baidu.com'
+          linkUrl: 'https://www.example.com',
+          thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })
         room.say(urlLink)
       })
@@ -258,7 +260,7 @@ const onMessage = async (msg) => {
     title: "测试链接",
     desc: "测试链接",
     thumbUrl: `${bot.proxy}/test/avatar.jpg`,
-    linkUrl: "https://www.baidu.com",
+    linkUrl: "https://www.example.com",
   });
   await msg.say(urlLink);
 

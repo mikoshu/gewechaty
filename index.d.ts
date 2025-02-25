@@ -316,7 +316,7 @@ declare module 'gewechaty' {
       title: string;
       desc?: string;
       linkUrl: string;
-      thumbUrl?: string;
+      thumbUrl: string;
     }
   
     export class MiniApp {
