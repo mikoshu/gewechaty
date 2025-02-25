@@ -159,8 +159,8 @@ declare module 'gewechaty' {
       // Methods from ROOM.js
       sync(): Promise<Room>;
       say(textOrContactOrFileOrUrl: string | Contact | Filebox | UrlLink | MiniApp, ats?: Contact[] | '@all'): Promise<ResponseMsg>;
-      on(event: 'join', listener: (room: Room, inviteeList: Contact[], inviter: Contact) => void): void;
-      on(event: 'leave', listener: (room: Room, leaverList: Contact[], remover?: Contact) => void): void;
+      on(event: 'join', listener: (room: Room, invitee: Contact, inviter: Contact) => void): void;
+      on(event: 'leave', listener: (room: Room, leaver: Contact, remover?: Contact) => void): void;
       on(event: 'topic', listener: (room: Room, newTopic: string, oldTopic: string, changer: Contact) => void): void;
       add(contact: Contact | string, reason?: string): Promise<void>;
       del(contact: Contact | string): Promise<void>;
