@@ -9,6 +9,7 @@ export {Voice} from '@/class/VOICE.js'
 export {Emoji} from '@/class/EMOJI.js'
 export {MiniApp} from '@/class/MINIAPP.js'
 export {AppMsg} from '@/class/APPMSG.js'
+export {Contact} from '@/class/CONTACT.js'
 import {Message} from '@/class/MESSAGE.js'
 import {Room} from '@/class/ROOM.js'
 import { getLocalIPAddress } from "@/utils/index.js";

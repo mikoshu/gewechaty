@@ -83,21 +83,32 @@ declare module 'gewechaty' {
   
     export class Contact {
       // Properties from CONTACT.js constructor
+      /** @deprecated 不建议直接访问私有变量，可使用 `name()` 方法替代 */
       _name: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `alias()` 方法替代 */
       _alias: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `friend()` 方法替代 */
       _isFriend: boolean;
+      /** @deprecated 不建议直接访问私有变量，可使用 `wxid()` 方法替代 */
       _wxid: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `type()` 方法替代 */
       _type: number;
+      /** @deprecated 不建议直接访问私有变量，可使用 `gender()` 方法替代 */
       _gender: number;
+      /** @deprecated 不建议直接访问私有变量，可使用 `province()` 方法替代 */
       _province: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `city()` 方法替代 */
       _city: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `avatar()` 方法替代 */
       _avatarUrl: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `self()` 方法替代 */
       _isSelf: boolean;
       inviterUserName: string;
-  
+      
       // Methods from CONTACT.js
       say(textOrContactOrFileOrUrl: string | Contact | Filebox | UrlLink | MiniApp): Promise<ResponseMsg>;
       name(): string;
+      wxid(): string | null;
       alias(newAlias?: string): Promise<string | void>;
       friend(): boolean;
       type(): number;
@@ -109,19 +120,67 @@ declare module 'gewechaty' {
       self(): boolean;
   
       // Static methods
-      static find(query: ContactQueryFilter): Promise<Contact | undefined>;
-      static findAll(query: ContactQueryFilter): Promise<Contact[]>;
+      /**
+       * 根据名称、别名或微信 ID 精确查询单个联系人
+       * @param {string|Object} query - 查询条件，可以是字符串或查询对象：
+       *   - 若为字符串，将按微信 ID 精确查询
+       *   - 若为对象，需包含以下属性之一：
+       *     @property {string} [name] - 联系人名称（精确匹配）
+       *     @property {string} [alias] - 联系人备注名（精确匹配）
+       *     @property {string} [wxid] - 联系人微信 ID（精确匹配）
+       * @returns {Promise<Contact|null>} 返回 Promise，解析为匹配的联系人对象，未找到返回 null
+       * @throws {Error} 当参数格式不符合要求或未提供有效查询条件时抛出
+       */
+      static find(query: string | ContactQueryFilter): Promise<Contact | null>;
+      /**
+       * 批量查询联系人，支持模糊匹配或获取全部
+       * @param {Object} [query] - 可选查询条件对象：
+       *   - 不传参数时返回所有联系人
+       *   - 若传对象，需包含以下属性之一：
+       *     @property {string} [name] - 联系人名称（模糊匹配）
+       *     @property {string} [alias] - 联系人备注名（模糊匹配）
+       * @returns {Promise<Contact[]>} 返回 Promise，解析为联系人数组，无匹配条目时返回空数组
+       * @throws {Error} 当参数格式不符合要求或查询条件不合法时抛出
+       */
+      static findAll(query?: ContactQueryAllFilter): Promise<Contact[]>;
     }
   
     export interface ContactStatic {
-      find(query: ContactQueryFilter): Promise<Contact | undefined>;
-      findAll(query: ContactQueryFilter): Promise<Contact[]>;
+      // Static methods
+      /**
+       * 根据名称、别名或微信 ID 精确查询单个联系人
+       * @param {string|Object} query - 查询条件，可以是字符串或查询对象：
+       *   - 若为字符串，将按微信 ID 精确查询
+       *   - 若为对象，需包含以下属性之一：
+       *     @property {string} [name] - 联系人名称（精确匹配）
+       *     @property {string} [alias] - 联系人备注名（精确匹配）
+       *     @property {string} [wxid] - 联系人微信 ID（精确匹配）
+       * @returns {Promise<Contact|null>} 返回 Promise，解析为匹配的联系人对象，未找到返回 null
+       * @throws {Error} 当参数格式不符合要求或未提供有效查询条件时抛出
+       */
+      find(query: string | ContactQueryFilter): Promise<Contact | null>;
+      /**
+       * 批量查询联系人，支持模糊匹配或获取全部
+       * @param {Object} [query] - 可选查询条件对象：
+       *   - 不传参数时返回所有联系人
+       *   - 若传对象，需包含以下属性之一：
+       *     @property {string} [name] - 联系人名称（模糊匹配）
+       *     @property {string} [alias] - 联系人备注名（模糊匹配）
+       * @returns {Promise<Contact[]>} 返回 Promise，解析为联系人数组，无匹配条目时返回空数组
+       * @throws {Error} 当参数格式不符合要求或查询条件不合法时抛出
+       */
+      findAll(query?: ContactQueryAllFilter): Promise<Contact[]>;
     }
   
     export interface ContactQueryFilter {
       name?: string;
       alias?: string;
-      id?: string;
+      wxid?: string;
+    }
+
+    export interface ContactQueryAllFilter {
+      name?: string;
+      alias?: string;
     }
   
     export class Friendship {
@@ -159,8 +218,8 @@ declare module 'gewechaty' {
       // Methods from ROOM.js
       sync(): Promise<Room>;
       say(textOrContactOrFileOrUrl: string | Contact | Filebox | UrlLink | MiniApp, ats?: Contact[] | '@all'): Promise<ResponseMsg>;
-      on(event: 'join', listener: (room: Room, inviteeList: Contact[], inviter: Contact) => void): void;
-      on(event: 'leave', listener: (room: Room, leaverList: Contact[], remover?: Contact) => void): void;
+      on(event: 'join', listener: (room: Room, invitee: Contact, inviter: Contact) => void): void;
+      on(event: 'leave', listener: (room: Room, leaver: Contact, remover?: Contact) => void): void;
       on(event: 'topic', listener: (room: Room, newTopic: string, oldTopic: string, changer: Contact) => void): void;
       add(contact: Contact | string, reason?: string): Promise<void>;
       del(contact: Contact | string): Promise<void>;
@@ -268,7 +327,9 @@ declare module 'gewechaty' {
         FunctionMsg: 'function_msg',
         NewMonmentTimeline: 'new_monment_timeline',
         ChatHistroy: 'chat_histroy',
+        RoomVoip: 'room_voip',
         Voip: 'voip',
+        VoipHangup: 'voip_hangup',
         RealTimeLocation: 'real_time_location',
       };
     }
@@ -316,7 +377,7 @@ declare module 'gewechaty' {
       title: string;
       desc?: string;
       linkUrl: string;
-      thumbUrl?: string;
+      thumbUrl: string;
     }
   
     export class MiniApp {
