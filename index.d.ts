@@ -83,21 +83,32 @@ declare module 'gewechaty' {
   
     export class Contact {
       // Properties from CONTACT.js constructor
+      /** @deprecated 不建议直接访问私有变量，可使用 `name()` 方法替代 */
       _name: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `alias()` 方法替代 */
       _alias: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `friend()` 方法替代 */
       _isFriend: boolean;
+      /** @deprecated 不建议直接访问私有变量，可使用 `wxid()` 方法替代 */
       _wxid: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `type()` 方法替代 */
       _type: number;
+      /** @deprecated 不建议直接访问私有变量，可使用 `gender()` 方法替代 */
       _gender: number;
+      /** @deprecated 不建议直接访问私有变量，可使用 `province()` 方法替代 */
       _province: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `city()` 方法替代 */
       _city: string | null;
+      /** @deprecated 不建议直接访问私有变量，可使用 `avatar()` 方法替代 */
       _avatarUrl: string;
+      /** @deprecated 不建议直接访问私有变量，可使用 `self()` 方法替代 */
       _isSelf: boolean;
       inviterUserName: string;
-  
+      
       // Methods from CONTACT.js
       say(textOrContactOrFileOrUrl: string | Contact | Filebox | UrlLink | MiniApp): Promise<ResponseMsg>;
       name(): string;
+      wxid(): string;
       alias(newAlias?: string): Promise<string | void>;
       friend(): boolean;
       type(): number;

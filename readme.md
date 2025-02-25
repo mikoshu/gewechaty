@@ -186,7 +186,7 @@ bot
       room.on('join', async (room, contact) => {
         const urlLink = new UrlLink({
           title: `${contact.name()}加入了群聊`,
-          desc: `微信号：${contact._wxid}`,
+          desc: `微信号：${contact.wxid()}`,
           linkUrl: 'https://www.example.com',
           thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })
@@ -194,8 +194,8 @@ bot
       })
       room.on('leave', async (room, contact) => {
         const urlLink = new UrlLink({
-          title: `${contact._name}退出了群聊`,
-          desc: `微信号：${contact._wxid}`,
+          title: `${contact.name()}退出了群聊`,
+          desc: `微信号：${contact.wxid()}`,
           linkUrl: 'https://www.example.com',
           thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })

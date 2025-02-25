@@ -28,6 +28,10 @@ export class Contact {
     return this._name;
   }
 
+  wxid() {
+    return this._wxid;
+  }
+
   async alias(newAlias) {
     if(newAlias){
       return await setRemark(this._wxid, newAlias)
