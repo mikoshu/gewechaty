@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import Database from './sqlite-module';
 import fs from 'fs';
 import {getRoomMemberList} from '@/action/room.js'
 

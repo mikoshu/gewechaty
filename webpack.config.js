@@ -65,7 +65,9 @@ module.exports = {
   // },
   externals: {
     'better-sqlite3': 'commonjs better-sqlite3',
-    'ds': 'commonjs ds'
+    'ds': 'commonjs ds',
+    'bun:sqlite': 'commonjs bun:sqlite', // 供 Bun 运行时环境使用，有兼容层
+    // 'node:sqlite': 'commonjs node:sqlite', // 防止旧版本无法打包
   },
   // 添加性能优化配置
   optimization: {
