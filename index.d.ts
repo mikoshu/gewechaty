@@ -1,11 +1,15 @@
+import { type MyDB, type RoomMemberInDB } from './src/sql/index.d';
+import type Koa from 'koa';
+import type Router from 'koa-router';
+
 declare module 'gewechaty' {
     export class GeweBot {
       constructor(options?: GeweBotOptions);
-      db: any; // SQLite database instance
+      db: MyDB; // SQLite database instance
       use_cache: boolean;
       start(): Promise<{
-        app: import('koa');
-        router: import('koa-router');
+          app: Koa;
+          router: Router;
       }>;
       on(event: 'message', listener: (msg: Message) => void): void;
       on(event: 'friendship', listener: (friendship: Friendship) => void): void;
@@ -213,7 +217,7 @@ declare module 'gewechaty' {
       isNotify: boolean;
       OwnerId: string;
       avatarImg: string;
-      memberList: any[];
+      memberList: RoomMemberInDB;
   
       // Methods from ROOM.js
       sync(): Promise<Room>;
