@@ -1,4 +1,6 @@
 import { type MyDB, type RoomMemberInDB } from './src/sql/index.d';
+import type Koa from 'koa';
+import type Router from 'koa-router';
 
 declare module 'gewechaty' {
     export class GeweBot {
@@ -6,8 +8,8 @@ declare module 'gewechaty' {
       db: MyDB; // SQLite database instance
       use_cache: boolean;
       start(): Promise<{
-        app: import('koa');
-        router: import('koa-router');
+          app: Koa;
+          router: Router;
       }>;
       on(event: 'message', listener: (msg: Message) => void): void;
       on(event: 'friendship', listener: (friendship: Friendship) => void): void;
