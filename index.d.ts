@@ -1,7 +1,9 @@
+import { type MyDB } from './src/sql/index.d';
+
 declare module 'gewechaty' {
     export class GeweBot {
       constructor(options?: GeweBotOptions);
-      db: any; // SQLite database instance
+      db: MyDB; // SQLite database instance
       use_cache: boolean;
       start(): Promise<{
         app: import('koa');
