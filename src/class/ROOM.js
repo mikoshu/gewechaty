@@ -97,17 +97,17 @@ export class Room {
     if(memberList.length === 0){
       return []
     }
+
     if(!query){
       return memberList.map(item => {
         return new Contact(item)
       })
     }
-    const arr = []
-    memberList.map(item => {
-      if(item.nickName === query || item.displayName === query){
-        arr.push(new Contact(item)) 
-      }
-    })
+
+    const arr = memberList.filter(item => 
+      item.nickName === query || item.displayName === query
+    ).map(item => new Contact(item))
+
     return arr
   }
 
