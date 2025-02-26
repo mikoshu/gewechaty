@@ -1,4 +1,4 @@
-import { type MyDB } from './src/sql/index.d';
+import { type MyDB, type RoomMemberInDB } from './src/sql/index.d';
 
 declare module 'gewechaty' {
     export class GeweBot {
@@ -215,7 +215,7 @@ declare module 'gewechaty' {
       isNotify: boolean;
       OwnerId: string;
       avatarImg: string;
-      memberList: any[];
+      memberList: RoomMemberInDB;
   
       // Methods from ROOM.js
       sync(): Promise<Room>;
