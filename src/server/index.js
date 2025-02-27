@@ -35,7 +35,7 @@ function delay(ms) {
 app.use(bodyParser());
 
 
-export const startServe = (option) => {
+export const startServe = async (option) => {
   // 启动服务
   var cbip = option.ip || ip;
   let callBackUrl = `http://${cbip}:${option.port}${option.route}`
@@ -64,8 +64,7 @@ export const startServe = (option) => {
         if(s){
           console.log('断线重连成功')
         }else{
-          console.log('断线重连失败,请重新登录！')
-          process.exit(1);
+          throw new Error('断线重连失败,请重新登录！')
         }
       }
       
