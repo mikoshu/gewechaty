@@ -62,15 +62,8 @@ export const contactSync = async (wxid) => {
  * @throws {Error} 当参数格式不符合要求或未提供有效查询条件时抛出
  */
 export const find = async (content) => { // 使用name alias wxid查询
-  if(
-    !(typeof content === 'string' && content.length > 0) ||
-    typeof content ==='object'
-  ){
-    throw new Error('不支持的查询内容')
-  }
-
   let contact = null
-  if(typeof content ==='string'){
+  if(typeof content ==='string' && content !== ''){
     contact = db.findOneByWxId(content)
   }else if(typeof content ==='object'){
     if(content.name){
@@ -82,8 +75,10 @@ export const find = async (content) => { // 使用name alias wxid查询
     }else if(content.wxid){
       contact = db.findOneByWxId(content.wxid)
     }else{
-      throw new Error('至少需要一个查询条件')
+      throw new Error('不支持的查询内容')
     }
+  }else{
+    throw new Error('不支持的查询内容')
   }
   return contact? new Contact(contact) : null
 }
