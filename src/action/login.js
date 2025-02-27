@@ -6,21 +6,21 @@ import { botEmitter } from '@/bot.js'
 let loginStatus = 0
 // const appId = getAppId()
 // 获取token
-export const getToken = async() => {
-  return new Promise((resolve, reject) => {
-    GetToken().then(res => {
-      if(res.ret === 200){
-        setToken(res.data)
-        resolve()
-      }else{ 
-        reject()
-      }
-    }).catch(e => {
-      reject(e)
-    })
-  })
-
+export const getToken = async (saveToStorage = true) => {
+  const res = await GetToken()
+  if (res.ret === 200) {
+    // 如果不保存到本地存储，则直接返回数据
+    if (!saveToStorage) {
+      return res.data
+    }
+    // 保存到本地存储，并返回数据
+    setToken(res.data)
+    return res.data
+  }
+  // 返回码不为200，抛出错误
+  throw res
 }
+
 // 展示二维码
 const showQrcode = async() => {
   await getToken()
