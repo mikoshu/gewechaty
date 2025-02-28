@@ -6,21 +6,21 @@ import { botEmitter } from '@/bot.js'
 let loginStatus = 0
 // const appId = getAppId()
 // 获取token
-export const getToken = async() => {
-  return new Promise((resolve, reject) => {
-    GetToken().then(res => {
-      if(res.ret === 200){
-        setToken(res.data)
-        resolve()
-      }else{ 
-        reject()
-      }
-    }).catch(e => {
-      reject(e)
-    })
-  })
-
+export const getToken = async (saveToStorage = true) => {
+  const res = await GetToken()
+  if (res.ret === 200) {
+    // 如果不保存到本地存储，则直接返回数据
+    if (!saveToStorage) {
+      return res.data
+    }
+    // 保存到本地存储，并返回数据
+    setToken(res.data)
+    return res.data
+  }
+  // 返回码不为200，抛出错误
+  throw res
 }
+
 // 展示二维码
 const showQrcode = async() => {
   await getToken()
@@ -62,35 +62,28 @@ const checkLogin = async() => {
   loginStatus = res.data.status
 }
 
-function waitForCondition() {
-  return new Promise((resolve) => {
-    function checkCondition() {
-      checkLogin().then(() => {
-        if (loginStatus === 2) {
-          // 条件满足，调用 resolve
-          resolve(true);
-        } else {
-          // 条件不满足，等待 5 秒后再次调用
-          console.log('请扫码登录...');
-          setTimeout(checkCondition, 5000);
-        }
-      }).catch(e => {
-        console.log('检查登录失败')
-        console.error(e)
-        resolve(false)
-      })
+async function waitForCondition() {
+  try {
+    while (true) {
+      await checkLogin(); // 检查登录状态
+      if (loginStatus === 2) {
+        return true; // 条件满足，返回 true
+      }
+      await new Promise((r) => setTimeout(r, 5000)); // 等待 5 秒后继续检查
     }
-    checkCondition();
-  });
+  } catch (error) {
+    console.log('检查登录失败');
+    console.error(error);
+    return false; // 发生错误时返回 false
+  }
 }
-
-
 
 export const login = async (callbackUrl) => {
   try{
     const res = await showQrcode()
     console.log('showQrcode:', res)
     if(res){
+      console.log('请扫码登录...');
       return await waitForCondition()
     }else{
       return false
