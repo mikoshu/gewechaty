@@ -45,6 +45,7 @@ declare module 'gewechaty' {
       route?: string;
       use_cache?: boolean;
       data_dir?: string;
+      dbFileName?: string;
     }
   
     export interface ContactSelf {
