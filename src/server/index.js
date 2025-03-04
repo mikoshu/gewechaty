@@ -52,12 +52,17 @@ export const startServe = (option) => {
   router.post(option.route, async (ctx) => {
     try{
       const body = JSONbig({ storeAsString: true }).parse(ctx.request.rawBody); // 获取 POST 请求的 body 数据
+      // 兼容新版本 key 值变化
+      body.Appid = body.Appid || body.appid
+      body.TypeName = body.TypeName || body.type_name
+      body.Data = body.Data || body.data
+
       if(option.debug){
         console.log(body);
       }
       // all 事件
       bot.emit('all', body)
-
+      
       if(body && body.TypeName === 'Offline'){
         console.log('断线重连中...')
         const s = await reconnection()
