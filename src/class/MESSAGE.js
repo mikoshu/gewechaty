@@ -191,34 +191,26 @@ export class Message {
       switch (type) {
         case 1:
           return MessageType.Text;
-          break;
         case 3:
           return MessageType.Image;
-          break;
         case 34:
           return MessageType.Voice;
-          break;
         case 37:
           return MessageType.AddFriend;
-          break;
         case 42:
           return MessageType.Contact;
-          break;
         case 43:
           return MessageType.Video;
-          break;
         case 47:
           return MessageType.Emoji;
-          break;
         case 48:
           return MessageType.Location
-          break;
         case 49:
           jObj = Message.getXmlToJson(xml);
           // console.log(jObj)
           if (jObj.msg.appmsg.type === 5) {
             if (jObj.msg.appmsg.title === '邀请你加入群聊') {
-              return MessageType.RoomInvitation
+              return MessageType.RoomInvitation;
             } else { // 公众号链接
               return MessageType.Link;
             }
@@ -243,8 +235,7 @@ export class Message {
           }
           break;
         case 50:
-          //VOIP挂断
-          break;
+          return MessageType.VoipHangup; // 微信电话挂断
         case 51:
           //状态通知
           jObj = Message.getXmlToJson(xml);
@@ -255,32 +246,34 @@ export class Message {
           }
           break;
         case 56:
-          //语音群聊
-          break;
+          return MessageType.RoomVoip; // 群语音
         case 10000:
           //群通知
           break;
         case 10002:
           jObj = Message.getXmlToJson(xml);
           if (jObj.sysmsg.type === 'revokemsg') {
-            return MessageType.Revoke
+            return MessageType.Revoke;
           } else if (jObj.sysmsg.type === 'pat') {
-            return MessageType.Pat
+            return MessageType.Pat;
           } else if (jObj.sysmsg.type === 'functionmsg') {
-            return MessageType.FunctionMsg
+            return MessageType.FunctionMsg;
           } else if (jObj.sysmsg.type === 'ilinkvoip') {
-            //voip邀请
-            return MessageType.Voip
+            // voip邀请
+            return MessageType.Voip;
           } else if (jObj.sysmsg.type === 'trackmsg') {
-            //实时位置更新
+            // 实时位置更新
           }
           break;
-        default:
-          return MessageType.Unknown
       }
     } catch (e) {
-      return MessageType.Unknown
+      // Do nothing
     }
+
+    // 不管是因为报错，还是未被任何 case 匹配，
+    // 还是匹配了之后因未处理而 break 下来，都需要返回未知类型，
+    // 以避免返回 undefined 的情况
+    return MessageType.Unknown;
   }
   static revoke (obj) {
     return revoke(obj)

@@ -31,6 +31,11 @@
   },
   "devDependencies": {
     "@swc/core": "^1.10.7",
+    "@types/koa": "^2.15.0",
+    "@types/koa-router": "^7.4.8",
+    "@types/koa-static": "^4.0.4",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/bun": "^1.2.3",
     "glob": "^11.0.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.4.2",
@@ -39,6 +44,7 @@
   },
   "files": [
     "dist/",
+    "src/**/*.d.ts",
     "index.d.ts"
   ],
   "repository": {

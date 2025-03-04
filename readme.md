@@ -185,17 +185,19 @@ bot
     if(room){
       room.on('join', async (room, contact) => {
         const urlLink = new UrlLink({
-          title: `${contact._name}加入了群聊`,
-          desc: `微信号：${contact._wxid}`,
-          linkUrl: 'https://www.baidu.com'
+          title: `${contact.name()}加入了群聊`,
+          desc: `微信号：${contact.wxid()}`,
+          linkUrl: 'https://www.example.com',
+          thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })
         room.say(urlLink)
       })
       room.on('leave', async (room, contact) => {
         const urlLink = new UrlLink({
-          title: `${contact._name}退出了群聊`,
-          desc: `微信号：${contact._wxid}`,
-          linkUrl: 'https://www.baidu.com'
+          title: `${contact.name()}退出了群聊`,
+          desc: `微信号：${contact.wxid()}`,
+          linkUrl: 'https://www.example.com',
+          thumbUrl: `${bot.proxy}/example/avatar.jpg`
         })
         room.say(urlLink)
       })
@@ -258,7 +260,7 @@ const onMessage = async (msg) => {
     title: "测试链接",
     desc: "测试链接",
     thumbUrl: `${bot.proxy}/test/avatar.jpg`,
-    linkUrl: "https://www.baidu.com",
+    linkUrl: "https://www.example.com",
   });
   await msg.say(urlLink);
 
@@ -353,6 +355,8 @@ const bot = new GeweBot({
   route: "/getWechatCallBack", // 本地回调接口route 默认为 `/getWechatCallBack` 最终地址为 `http://本机ip:port/getWechatCallBack`
   base_api: process.env.WEGE_BASE_API_URL, // 基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
   file_api: process.env.WEGE_FILE_API_URL, // 文件api地址base_api 默认为 `http://本机ip:2532/download`,
+  data_dir: './data', // 数据存储路径 默认为工作目录下的data文件夹
+  dbFileName: 'botCache' // 可选, 自定义sqlite数据库文件名，默认文件名: ${appid}.db
 });
 // 如果docker 和GeweBot在同一台电脑上 可以直接使用 new GeweBot() 即可
 ```
@@ -488,6 +492,7 @@ const bot = new GeweBot({
 | `Revoke`         | 撤回消息     |
 | `Pat`            | 拍一拍       |
 | `Location`       | 位置消息     |
+| 更多请参阅 `.d.ts` 的 `MessageStatic.type`|
 
 ### Friendship 类方法表
 

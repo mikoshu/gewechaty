@@ -28,6 +28,10 @@ export class Contact {
     return this._name;
   }
 
+  wxid() {
+    return this._wxid;
+  }
+
   async alias(newAlias) {
     if(newAlias){
       return await setRemark(this._wxid, newAlias)
@@ -72,11 +76,31 @@ export class Contact {
   }
 
   // 静态方法
-
+  /**
+   * 根据名称、别名或微信 ID 精确查询单个联系人
+   * @param {string|Object} query - 查询条件，可以是字符串或查询对象：
+   *   - 若为字符串，将按微信 ID 精确查询
+   *   - 若为对象，需包含以下属性之一：
+   *     @property {string} [name] - 联系人名称（精确匹配）
+   *     @property {string} [alias] - 联系人备注名（精确匹配）
+   *     @property {string} [wxid] - 联系人微信 ID（精确匹配）
+   * @returns {Promise<Contact|null>} 返回 Promise，解析为匹配的联系人对象，未找到返回 null
+   * @throws {Error} 当参数格式不符合要求或未提供有效查询条件时抛出
+   */
   static async find(query) {
     return find(query)
   }
 
+  /**
+   * 批量查询联系人，支持模糊匹配或获取全部
+   * @param {Object} [query] - 可选查询条件对象：
+   *   - 不传参数时返回所有联系人
+   *   - 若传对象，需包含以下属性之一：
+   *     @property {string} [name] - 联系人名称（模糊匹配）
+   *     @property {string} [alias] - 联系人备注名（模糊匹配）
+   * @returns {Promise<Contact[]>} 返回 Promise，解析为联系人数组，无匹配条目时返回空数组
+   * @throws {Error} 当参数格式不符合要求或查询条件不合法时抛出
+   */
   static async findAll(query) {
     return findAll(query)
   }

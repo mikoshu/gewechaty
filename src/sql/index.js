@@ -1,17 +1,18 @@
-import Database from 'better-sqlite3';
+import Database from './sqlite-module';
 import fs from 'fs';
 import {getRoomMemberList} from '@/action/room.js'
 
-class myDB {
+class MyDB {
   constructor() {
     this.db = null;
   }
 
+  /** 检查数据库是否存在 */
   exists(dbName) {
     return fs.existsSync(dbName);
   }
 
-  // 方法1：传入数据库名称，检查是否存在数据库，存在则返回db实例，不存在则创建并返回实例
+  /** 传入数据库名称，检查是否存在数据库，存在则返回db实例，不存在则创建并返回实例 */
   connect(dbName) {
     if (!fs.existsSync(dbName)) {
       console.log(`Database ${dbName} does not exist, creating...`);
@@ -21,7 +22,7 @@ class myDB {
     return this.db;
   }
 
-  // 方法2：创建contact表，如果不存在则创建
+  /** 尝试创建contact表，如果该表已存在则不生效 */
   createContactTable() {
     const tableName = 'contact';
     const tableSchema = `
@@ -56,7 +57,7 @@ class myDB {
     }
   }
 
-  // 方法2：创建room表，如果不存在则创建
+  /** 尝试创建room表，如果该表已存在则不生效 */
   createRoomTable() {
     const tableName = 'room';
     const tableSchema = `
@@ -91,59 +92,60 @@ class myDB {
     }
   }
 
-  // 方法3：根据 userName 查找联系人，返回该条数据或 null
+  /** 根据 wxid 查找联系人，返回该条数据或 null */
   findOneByWxId(wxid) {
     const stmt = this.db.prepare('SELECT * FROM contact WHERE userName = ?');
     const row = stmt.get(wxid);
     return row ? row : null;
   }
-
+  /** 根据昵称查找联系人，返回该条数据或 null */
   findOneByName(nickName) {
     const stmt = this.db.prepare('SELECT * FROM contact WHERE nickName = ?');
     const row = stmt.get(nickName);
     return row ? row : null;
   }
+  /** 根据昵称查找全部符合条件的联系人，返回数据数组或空数组 */
   findAllByName(nickName) {
     const stmt = this.db.prepare('SELECT * FROM contact WHERE nickName = ?');
     const rows = stmt.all(nickName);
-    return rows.length > 0 ? rows : null;
+    return rows; // 当没有匹配的记录时，会返回空数组
   }
-
+  /** 根据微信备注查找联系人，返回该条数据或 null */
   findOneByAlias(alias) {
     const stmt = this.db.prepare('SELECT * FROM contact WHERE remark = ?');
     const row = stmt.get(alias);
     return row ? row : null;
   }
-
+  /** 根据微信备注查找全部符合条件的联系人，返回数据数组或空数组 */
   findAllByAlias(alias) {
     const stmt = this.db.prepare('SELECT * FROM contact WHERE remark = ?');
     const rows = stmt.all(alias);
-    return rows.length > 0 ? rows : null;
+    return rows; // 当没有匹配的记录时，会返回空数组
   }
 
-  // 方法3：根据 chatroomId 查找房间，返回该条数据或 null
+  /** 根据 chatroomId 查找群聊，返回该条数据或 null */
   findOneByChatroomId(chatroomId) {
     const stmt = this.db.prepare('SELECT * FROM room WHERE chatroomId = ?');
     const row = stmt.get(chatroomId);
     if (row && row.memberList) {
-      row.memberList = JSON.parse(row.memberList); // 将 memberList 转换为 JSON 格式
+      row.memberList = JSON.parse(row.memberList); // 将 memberList 从 JSON 格式解析
     }
     return row ? row : null;
   }
-
+  /** 根据群聊名称查找群聊，返回该条数据或 null */
   findOneByChatroomName(name) {
     const stmt = this.db.prepare('SELECT * FROM room WHERE nickName = ?');
     const row = stmt.get(name);
     return row ? row : null;
   }
-
+  /** 根据群聊名称查找全部符合条件的群聊，返回数据数组或空数组 */
   findAllByChatroomName(name) {
     const stmt = this.db.prepare('SELECT * FROM room WHERE nickName = ?');
     const rows = stmt.all(name);
-    return rows.length > 0 ? rows : null;
+    return rows; // 当没有匹配的记录时，会返回空数组
   }
 
-  // 新增方法：更新room表中的memberList字段
+  /** 更新 room 表中的 memberList 字段，返回成功更改的记录数量 */
   updateRoomMemberList(chatroomId, memberList) {
     const existingRoom = this.findOneByChatroomId(chatroomId);
     if (!existingRoom) {
@@ -156,20 +158,22 @@ class myDB {
     `);
 
     // 将 memberList 转换为 JSON 字符串并更新
-    updateStmt.run(JSON.stringify(memberList), chatroomId);
+    const changes = updateStmt.run(JSON.stringify(memberList), chatroomId);
 
     console.log(`Updated memberList for room: ${chatroomId}`);
+
+    return changes;
   }
 
-  // 方法4：插入新的联系人数据，如果存在则更新
+  /** 插入新的联系人数据，如果存在则更新，返回成功更改的记录数量 */
   insertContact(contact) {
     if (contact.userName === null) {
       return;
     }
-  
+
     // 定义字段的最大长度
     const MAX_LENGTH = 255;
-  
+
     // 用一个函数来截断字符串
     const truncate = (value, maxLength = MAX_LENGTH) => {
       if (typeof value === 'string' && value.length > maxLength) {
@@ -177,7 +181,7 @@ class myDB {
       }
       return value;
     };
-  
+
     const insertStmt = this.db.prepare(`
       INSERT OR REPLACE INTO contact (
         userName, nickName, pyInitial, quanPin, sex, remark, remarkPyInitial,
@@ -185,8 +189,8 @@ class myDB {
         smallHeadImgUrl, description, cardImgUrl, labelList, province, city, phoneNumList
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-  
-    insertStmt.run(
+
+    const changes = insertStmt.run(
       truncate(contact.userName) || null,
       truncate(contact.nickName) || null,
       truncate(contact.pyInitial) || null,
@@ -208,11 +212,13 @@ class myDB {
       truncate(contact.city) || null,
       truncate(contact.phoneNumList) || null
     );
-  
+
     console.log(`缓存联系人: ${contact.userName}`);
+
+    return changes;
   }
 
-  // 方法4：插入新的房间数据，如果存在则更新
+  /** 插入新的群聊数据，如果存在则更新，返回成功更改的记录数量 */
   insertRoom(room) {
     if(room.chatroomId === null){
       return
@@ -224,7 +230,7 @@ class myDB {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    insertStmt.run(
+    const changes = insertStmt.run(
       room.chatroomId || null,
       room.nickName || null,
       room.pyInitial || null,
@@ -240,8 +246,11 @@ class myDB {
     );
 
     console.log(`缓存群: ${room.chatroomId}`);
+
+    return changes;
   }
-  // 方法5：更新联系人数据
+
+  /** 更新联系人数据，返回成功更改的记录数量 */
   updateContact(userName, newData) {
     const existingContact = this.findOneByUserName(userName);
     if (!existingContact) {
@@ -257,7 +266,7 @@ class myDB {
       WHERE userName = ?
     `);
 
-    updateStmt.run(
+    const changes = updateStmt.run(
       newData.nickName || existingContact.nickName,
       newData.pyInitial || existingContact.pyInitial,
       newData.quanPin || existingContact.quanPin,
@@ -281,9 +290,10 @@ class myDB {
     );
 
     console.log(`Updated contact: ${userName}`);
-  }
 
-  // 方法5：更新房间数据
+    return changes;
+  }
+  /** 更新群聊数据，返回成功更改的记录数量 */
   async updateRoom(chatroomId, newData) {
     const existingRoom = this.findOneByChatroomId(chatroomId);
     if (!existingRoom) {
@@ -297,12 +307,12 @@ class myDB {
         remarkQuanPin = ?, chatRoomNotify = ?, chatRoomOwner = ?, smallHeadImgUrl = ?, memberList = ?
       WHERE chatroomId = ?
     `);
-    
+
     const res = await getRoomMemberList(chatroomId) // 更新memberlist
     if(res && res.memberList){
       newData.memberList = res.memberList
     }
-    updateStmt.run(
+    const changes = updateStmt.run(
       newData.nickName || existingRoom.nickName,
       newData.pyInitial || existingRoom.pyInitial,
       newData.quanPin || existingRoom.quanPin,
@@ -318,15 +328,18 @@ class myDB {
     );
 
     console.log(`Updated room: ${chatroomId}`);
+
+    return changes;
   }
-  // 方法6：查询所有联系人数据
+
+  /** 查询所有联系人数据 */
   findAllContacts() {
     const stmt = this.db.prepare('SELECT * FROM contact');
     const rows = stmt.all(); // 获取所有记录
     return rows;
   }
 
-  // 方法7：查询所有房间数据
+  /** 查询所有群聊数据 */
   findAllRooms() {
     const stmt = this.db.prepare('SELECT * FROM room');
     const rows = stmt.all();
@@ -339,4 +352,4 @@ class myDB {
   }
 }
 
-export const db = new myDB();
+export const db = new MyDB();
