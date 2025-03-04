@@ -186,7 +186,12 @@ export const startServe = async (option) => {
 
       // 登录成功后，获取当前 appid，并拼接数据库路径
       const currentAppId = ds.getAppId()
-      const dbPath = join(option.data_dir, currentAppId + '.db')
+      let dbPath
+      if (option.dbFileName !== undefined) {
+        dbPath = join(option.data_dir, option.dbFileName + '.db')
+      } else {
+        dbPath = join(option.data_dir, currentAppId + '.db')
+      }
 
       // 如果数据库文件不存在，需要初始化数据库
       if(!db.exists(dbPath)){
@@ -197,7 +202,7 @@ export const startServe = async (option) => {
         // setAppId()
         if (oldToken !== currentToken && db.exists(join(option.data_dir, oldAppId + '.db'))) { // token 变化，且旧数据库文件存在
             // 用拷贝-删除替代重命名，以避免旧的数据库文件被占用导致无法重命名
-            await fsPromise.copyFile(join(option.data_dir, oldAppId + '.db'), join(option.data_dir, currentAppId + '.db'))
+            await fsPromise.copyFile(join(option.data_dir, oldAppId + '.db'), dbPath)
             // 删除失败只会在控制台输出错误，不会影响程序运行
             fsPromise.rm(join(option.data_dir, oldAppId + '.db')).catch(console.error)
 
