@@ -1,6 +1,6 @@
 import { type MyDB, type RoomMemberInDB } from './src/sql/index.d';
-import type Koa from 'koa';
-import type Router from 'koa-router';
+import type * as Koa from 'koa';
+import type * as Router from 'koa-router';
 
 declare module 'gewechaty' {
     export class GeweBot {
@@ -45,6 +45,7 @@ declare module 'gewechaty' {
       route?: string;
       use_cache?: boolean;
       data_dir?: string;
+      dbFileName?: string;
     }
   
     export interface ContactSelf {

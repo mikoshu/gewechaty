@@ -40,7 +40,7 @@ export class GeweBot {
     this.route = this.route || '/getWechatCallBack'
     this.use_cache = true
     this.debug = this.debug || false
-    this.data_dir = this.data_dir || join(process.cwd(), getDefaultDataPath())
+    this.data_dir = this.data_dir || getDefaultDataPath()
     // 初始化类
     this.Contact = Contact;
     this.Room = Room

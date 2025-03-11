@@ -356,6 +356,7 @@ const bot = new GeweBot({
   base_api: process.env.WEGE_BASE_API_URL, // 基础api地址base_api 默认为 `http://本机ip:2531/v2/api`
   file_api: process.env.WEGE_FILE_API_URL, // 文件api地址base_api 默认为 `http://本机ip:2532/download`,
   data_dir: './data', // 数据存储路径 默认为工作目录下的data文件夹
+  dbFileName: 'botCache' // 可选, 自定义sqlite数据库文件名，默认文件名: ${appid}.db
 });
 // 如果docker 和GeweBot在同一台电脑上 可以直接使用 new GeweBot() 即可
 ```
