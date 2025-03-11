@@ -1,6 +1,6 @@
 # gewechaty
 
-## 由于依赖项目Gewechat镜像目前已经停止下载，本项目不再维护（已有镜像的用户可以继续使用）。
+> 基于Gewechat的微信机器人插件
 
 ## 一、简介
 
@@ -397,7 +397,7 @@ const bot = new GeweBot({
 | `date()`                              | `Date`                 | 获取消息的日期。                                       |
 | `age()`                               | `number`               | 获取消息的年龄（以秒为单位）。                           |
 | `async toFileBox(type = 2)`           | `Promise<FileBox>`     | 将消息转换为 FileBox 对象，用于图片消息type为图片质量。 |
-| `getXml2Json(xml)`                    | `Object`               | 将 XML 解析为 JSON 对象。                              |
+| `static getXmlToJson(xml)`            | `Object`               | 将 XML 解析为 JSON 对象。                              |
 | `static async find(query)`            | `Promise<Contact>`     | (由于未保存聊天信息，暂不支持)                         |
 | `static async findAll(queryArgs)`     | `Promise<[Contact]>`   | （由于未保存聊天信息，暂不支持 ）                        |
 
@@ -421,7 +421,7 @@ const bot = new GeweBot({
 | `province()`                          | `string`       | 返回联系人的省份信息。                                                           |
 | `city()`                              | `string`       | 返回联系人的城市信息。                                                           |
 | `async avatar()`                      | `Promise`      | 返回联系人的头像 URL。                                                           |
-| `async sync()`                        | `Promise`      | 同步联系人信息，同步后会自动更新本地缓存。                                      |
+| `async sync()`                        | `Promise`      | 同步联系人信息，同步后会自动更新本地缓存。                                        |
 | `self()`                              | `boolean`      | 判断该联系人是否为当前用户自己。                                                 |
 
 ### Contact 类静态方法表
