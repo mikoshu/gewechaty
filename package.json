@@ -1,6 +1,6 @@
 {
   "name": "gewechaty",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "main": "dist/index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -21,7 +21,6 @@
     "fast-xml-parser": "^4.5.0",
     "json-bigint": "^1.0.0",
     "koa": "^2.15.3",
-    "koa-bodyparser": "^4.4.1",
     "koa-router": "^13.0.1",
     "koa-static": "^5.0.0",
     "qrcode-terminal": "^0.12.0"
