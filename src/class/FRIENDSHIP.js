@@ -1,4 +1,5 @@
 import {acceptContact, searchContact, addContact, rejectContact} from '@/action/contact.js'
+import {Contact} from "./CONTACT"
 export class Friendship {
   constructor(obj) {
     this.fromName = obj.fromnickname || obj.nickName; // 代表联系人的信息
