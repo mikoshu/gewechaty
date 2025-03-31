@@ -5,6 +5,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "node ./test.js",
+    "test2": "node_modules/.bin/ts-node -r tsconfig-paths/register src/test.js",
     "dev": "npm run build && npm run test",
     "build": "webpack --config ./webpack.config.js",
     "check-types": "tsc index.d.ts --noEmit",
@@ -39,7 +40,11 @@
     "swc-loader": "^0.2.6",
     "typescript": "^5.4.2",
     "webpack": "^5.94.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0"
   },
   "files": [
     "dist/",
