@@ -184,7 +184,7 @@ export const say = async (content, toWxid, ats) => {
 }
 // 引用
 export const quote = async (obj, toWxid) => {
-  const msg = `<appmsg appid="" sdkver="0"><title>${obj.title}</title><des /><action /><type>57</type><showtype>0</showtype><soundtype>0</soundtype><mediatagname /><messageext /><messageaction /><content /><contentattr>0</contentattr><url /><lowurl /><dataurl /><lowdataurl /><songalbumurl /><songlyric /><appattach><totallen>0</totallen><attachid /><emoticonmd5 /><fileext /><aeskey /></appattach><extinfo /><sourceusername /><sourcedisplayname /><thumburl /><md5 /><statextstr /><refermsg><type>1</type><svrid>${obj.msgid}</svrid><chatusr>${obj.wxid}</chatusr></refermsg></appmsg>`
+  const msg = `<appmsg appid="" sdkver="0"><title>${obj.title}</title><des /><action /><type>57</type><showtype>0</showtype><soundtype>0</soundtype><mediatagname /><messageext /><messageaction /><content /><contentattr>0</contentattr><url /><lowurl /><dataurl /><lowdataurl /><songalbumurl /><songlyric /><appattach><totallen>0</totallen><attachid /><emoticonmd5 /><fileext /><aeskey /></appattach><extinfo /><sourceusername /><sourcedisplayname /><thumburl /><md5 /><statextstr /><refermsg><type>${obj.type || 1}</type><svrid>${obj.msgid}</svrid><chatusr>${obj.wxid}</chatusr></refermsg></appmsg>`
   return SendAppMsg({
     appId: getAppId(),
     toWxid,

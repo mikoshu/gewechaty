@@ -161,7 +161,8 @@ export class Message {
     let msg = {
       title,
       msgid: this._newMsgId,
-      wxid
+      wxid,
+      type: this._type,
     }
 
     return quote(msg, wxid)
