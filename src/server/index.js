@@ -1,5 +1,5 @@
 import koa from 'koa'
-import * as koaRouter from 'koa-router'
+import Router from 'koa-router'
 const { bodyParser } = require("@koa/bodyparser");
 import JSONbig from 'json-bigint'
 import serve from 'koa-static'
@@ -26,7 +26,7 @@ export let staticUrl = 'static'
 export let proxyUrl = ''
 const ip = getLocalIPAddress()
 const app = new koa()
-const router = new koaRouter()
+const router = new Router()
 // 使用 bodyParser 解析 POST 请求的 body
 
 function delay(ms) {
