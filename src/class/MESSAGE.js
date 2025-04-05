@@ -46,7 +46,7 @@ export class Message {
     this._status = data.Data.Status || null;
     this._msgSource = data.Data.MsgSource || null;
 
-    if (this.isRoom) { // 执行一次 自动插入房间数据
+    if (this.isRoom && this.type() !== MessageType.RoomDelete) { // 执行一次 自动插入房间数据
       getRoomInfo(this.roomId);
     }
   }
@@ -249,6 +249,9 @@ export class Message {
         case 56:
           return MessageType.RoomVoip; // 群语音
         case 10000:
+          if(this.text().includes('移出群聊')){
+            return MessageType.RoomDelete;
+          }
           //群通知
           break;
         case 10002:

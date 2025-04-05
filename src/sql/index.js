@@ -312,6 +312,9 @@ class MyDB {
     if(res && res.memberList){
       newData.memberList = res.memberList
     }
+    if(!newData || !newData.memberList){
+      return
+    }
     const changes = updateStmt.run(
       newData.nickName || existingRoom.nickName,
       newData.pyInitial || existingRoom.pyInitial,
