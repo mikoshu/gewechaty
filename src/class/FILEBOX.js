@@ -75,7 +75,7 @@ export class Filebox {
     // 定义文件类型对应的扩展名
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
     const videoExtensions = ['mp4'];
-    const audioExtensions = ['mp3', 'wav', 'aac', 'flac', 'ogg', 'wma'];
+    const audioExtensions = ['mp3', 'wav', 'aac', 'flac', 'ogg', 'wma', 'silk'];
     const documentExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'zip', 'rar'];
     // 判断文件类型
     if (imageExtensions.includes(extension)) {
