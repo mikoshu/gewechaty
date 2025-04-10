@@ -1,5 +1,11 @@
 import os from 'os';
 import { XMLParser} from "fast-xml-parser";
+import he from 'he'
+
+
+export function escapeHtml(text) {
+  return he.encode(text);
+}
 
 export const getLocalIPAddress = () => {
   const interfaces = os.networkInterfaces();

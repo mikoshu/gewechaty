@@ -1,6 +1,6 @@
 {
   "name": "gewechaty",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "main": "dist/index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -19,6 +19,7 @@
     "better-sqlite3": "^11.3.0",
     "ds": "^2.0.2",
     "fast-xml-parser": "^4.5.0",
+    "he": "^1.2.0",
     "json-bigint": "^1.0.0",
     "koa": "^2.15.3",
     "koa-router": "^13.0.1",
@@ -30,11 +31,11 @@
   },
   "devDependencies": {
     "@swc/core": "^1.10.7",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/bun": "^1.2.3",
     "@types/koa": "^2.15.0",
     "@types/koa-router": "^7.4.8",
     "@types/koa-static": "^4.0.4",
-    "@types/better-sqlite3": "^7.6.12",
-    "@types/bun": "^1.2.3",
     "glob": "^11.0.0",
     "swc-loader": "^0.2.6",
     "typescript": "^5.4.2",

@@ -163,6 +163,7 @@ export class Message {
       msgid: this._newMsgId,
       wxid,
       type: this._type,
+      content: this._text,
     }
 
     return quote(msg, wxid)
