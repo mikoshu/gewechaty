@@ -30,4 +30,5 @@ export const MessageType = {
   Voip: 'voip',                                 // voip消息
   VoipHangup: 'voip_hangup',                    // voip挂断
   RealTimeLocation: 'real_time_location',       // 实时位置共享
+  RoomDelete:'room_delete',                    // 群聊被删除
 };
