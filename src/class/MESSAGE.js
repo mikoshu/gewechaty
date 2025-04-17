@@ -5,6 +5,7 @@ import { getRoomInfo } from '@/action/room'
 import { toFileBox } from '@/action/file'
 import { Filebox } from '@/class/FILEBOX'
 import { MessageType } from '@/type/MessageType'
+import { Contact } from "@/class/CONTACT";
 
 
 
@@ -93,11 +94,27 @@ export class Message {
   self () {
     return this._self;
   }
-  // 获取@的联系人 ..todo
+  // 获取@的联系人
   async mention () {
     // 根据消息内容模拟提到的联系人
-    console.log('暂不支持')
-    return null;
+    if (!this.isRoom || !this._msgSource) {
+      return [];
+    }
+    const result = Message.getXmlToJson(this._msgSource);
+    const atUserList = result.msgsource.atuserlist?.split(',');
+
+    const room = await getRoomInfo(this.roomId);
+    const mentionList = []
+    atUserList.forEach(atUser => {
+      const contact = room.memberList.find(member => member.wxid === atUser);
+      if (contact) {
+        mentionList.push(new Contact(contact))
+      }else{
+        mentionList.push(atUser) // room 中没有的话， 直接返回wxid
+      }
+    })
+
+    return mentionList;
   }
   // 是否被@了
   async mentionSelf () {

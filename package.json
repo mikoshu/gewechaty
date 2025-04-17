@@ -1,6 +1,6 @@
 {
   "name": "gewechaty",
-  "version": "0.0.31",
+  "version": "0.0.33",
   "main": "dist/index.js",
   "types": "index.d.ts",
   "scripts": {

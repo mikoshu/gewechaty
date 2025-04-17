@@ -392,6 +392,7 @@ const bot = new GeweBot({
 | `async say(textOrContactOrFileOrUrl)` | `Promise<ResponseMsg>` | 回复消息。                                             |
 | `type()`                              | `string`               | 获取消息的类型。参考 MessageType                       |
 | `self()`                              | `boolean`              | 判断是否为自己发的消息。                               |
+| `async mention`                       | `Promise<[Contact]>`   | 返回被@的contact 列表                                 |
 | `async mentionSelf()`                 | `Promise`              | 判断是否自己被@。                                      |
 | `async forward(Contact)`              | `Promise`              | 转发消息。                                             |
 | `async quote(text)`                   | `Promise`              | 引用消息（传入一个字符串）。                             |
